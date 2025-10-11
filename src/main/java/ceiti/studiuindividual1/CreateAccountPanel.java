@@ -69,6 +69,8 @@ public class CreateAccountPanel extends VBox {
 
         Label lblEmail = new Label("Email");
         TextField txtEmail = createStyledTextField();
+        txtEmail.setPromptText("exemple@gmail.com");
+
         lblEmail.setFont(Fonts.RobotoMonoSemiBold24);
         txtEmail.setFont(Fonts.RobotoMonoSemiBold24);
 
@@ -87,6 +89,8 @@ public class CreateAccountPanel extends VBox {
 
         Label lblDOB = new Label("Date of Birth");
         TextField txtDOB = createStyledTextField();
+        txtDOB.setPromptText("yyyy-mm-dd");
+
         lblDOB.setFont(Fonts.RobotoMonoSemiBold24);
         txtDOB.setFont(Fonts.RobotoMonoSemiBold24);
 

@@ -166,8 +166,25 @@ public class ManagementEducational extends BorderPane {
 
         RoundedButton btnStergere = new RoundedButton("Delete", null);
         btnStergere.setStyle("-fx-background-color: #4E5665; -fx-background-radius: 10;");
+
+        btnStergere.setOnAction(e ->{
+            VBox deleteStudentPane = createDeleteElevPane();
+            container1.getChildren().clear();
+            container1.getChildren().add(deleteStudentPane);
+        });
+
+
         RoundedButton btnModificare = new RoundedButton("Modify", null);
         btnModificare.setStyle("-fx-background-color: #4E5665; -fx-background-radius: 10;");
+
+
+        btnModificare.setOnAction(e ->{
+            AnchorPane modifyStudentPane = UpdateStudent();
+            container1.getChildren().clear();
+            container1.getChildren().add(modifyStudentPane);
+
+        });
+
 
         studentSubMenu.getChildren().addAll(btnAfisare, btnAdaugare, btnStergere, btnModificare);
 
@@ -289,7 +306,7 @@ public class ManagementEducational extends BorderPane {
     private AnchorPane AddStudent() {
 
         AnchorPane pane = new AnchorPane();
-        pane.setPrefSize(600, 550);
+        pane.setPrefSize(700, 550);
         pane.setStyle("""
             -fx-background-color: #F2F2F2;
             -fx-background-radius: 20;
@@ -309,7 +326,7 @@ public class ManagementEducational extends BorderPane {
         Title.setFont(Fonts.RobotoMonoBold32);
         Title.setStyle("-fx-text-fill: #272A31;");
         AnchorPane.setTopAnchor(Title, 46.0);
-        AnchorPane.setLeftAnchor(Title, 194.0);
+        AnchorPane.setLeftAnchor(Title, 250.0);
 
 
         // Etichete
@@ -352,10 +369,12 @@ public class ManagementEducational extends BorderPane {
         TextField txtPatronimic = createStyledTextField();
 
         TextField dateDataNasterii = createStyledTextField();
+        dateDataNasterii.setPromptText("yyyy-mm-dd");
 
         TextField txtIDNP = createStyledTextField();
 
         TextField txtEmail = createStyledTextField();
+        txtEmail.setPromptText("exemple@gmail.com");
 
         TextField txtTelefon = createStyledTextField();
 
@@ -369,42 +388,42 @@ public class ManagementEducational extends BorderPane {
 
         // Poziționare
         AnchorPane.setTopAnchor(lblNume, 124.0);
-        AnchorPane.setLeftAnchor(lblNume, 40.0);
+        AnchorPane.setLeftAnchor(lblNume, 70.0);
         AnchorPane.setTopAnchor(txtNume, 161.0);
-        AnchorPane.setLeftAnchor(txtNume, 40.0);
+        AnchorPane.setLeftAnchor(txtNume, 70.0);
 
         AnchorPane.setTopAnchor(lblPrenume, 211.0);
-        AnchorPane.setLeftAnchor(lblPrenume, 40.0);
+        AnchorPane.setLeftAnchor(lblPrenume, 70.0);
         AnchorPane.setTopAnchor(txtPrenume, 248.0);
-        AnchorPane.setLeftAnchor(txtPrenume, 40.0);
+        AnchorPane.setLeftAnchor(txtPrenume, 70.0);
 
         AnchorPane.setTopAnchor(lblPatronimic, 298.0);
-        AnchorPane.setLeftAnchor(lblPatronimic, 40.0);
+        AnchorPane.setLeftAnchor(lblPatronimic, 70.0);
         AnchorPane.setTopAnchor(txtPatronimic, 335.0);
-        AnchorPane.setLeftAnchor(txtPatronimic, 40.0);
+        AnchorPane.setLeftAnchor(txtPatronimic, 70.0);
 
         AnchorPane.setTopAnchor(lblData, 385.0);
-        AnchorPane.setLeftAnchor(lblData, 40.0);
+        AnchorPane.setLeftAnchor(lblData, 70.0);
         AnchorPane.setTopAnchor(dateDataNasterii, 422.0);
-        AnchorPane.setLeftAnchor(dateDataNasterii, 40.0);
+        AnchorPane.setLeftAnchor(dateDataNasterii, 70.0);
 
         AnchorPane.setTopAnchor(lblIDNP, 124.0);
-        AnchorPane.setLeftAnchor(lblIDNP, 318.0);
+        AnchorPane.setLeftAnchor(lblIDNP, 380.0);
         AnchorPane.setTopAnchor(txtIDNP, 161.0);
-        AnchorPane.setLeftAnchor(txtIDNP, 318.0);
+        AnchorPane.setLeftAnchor(txtIDNP, 380.0);
 
         AnchorPane.setTopAnchor(lblEmail, 211.0);
-        AnchorPane.setLeftAnchor(lblEmail, 318.0);
+        AnchorPane.setLeftAnchor(lblEmail, 380.0);
         AnchorPane.setTopAnchor(txtEmail, 248.0);
-        AnchorPane.setLeftAnchor(txtEmail, 318.0);
+        AnchorPane.setLeftAnchor(txtEmail, 380.0);
 
         AnchorPane.setTopAnchor(lblTelefon, 298.0);
-        AnchorPane.setLeftAnchor(lblTelefon, 318.0);
+        AnchorPane.setLeftAnchor(lblTelefon, 380.0);
         AnchorPane.setTopAnchor(txtTelefon, 335.0);
-        AnchorPane.setLeftAnchor(txtTelefon, 318.0);
+        AnchorPane.setLeftAnchor(txtTelefon, 380.0);
 
         AnchorPane.setTopAnchor(btnAdd, 422.0);
-        AnchorPane.setLeftAnchor(btnAdd, 318.0);
+        AnchorPane.setLeftAnchor(btnAdd, 380.0);
 
         pane.getChildren().addAll(Title, lblNume, txtNume, lblPrenume, txtPrenume, lblPatronimic, txtPatronimic,
                 lblData, dateDataNasterii, lblIDNP, txtIDNP, lblEmail, txtEmail, lblTelefon, txtTelefon,
@@ -483,7 +502,7 @@ public class ManagementEducational extends BorderPane {
 
     public AnchorPane createEleviTablePane() {
         AnchorPane pane = new AnchorPane();
-        pane.setPrefSize(700, 600);
+        pane.setPrefSize(700, 630);
         pane.setStyle("""
             -fx-background-color: #F2F2F2;
             -fx-background-radius: 20;
@@ -492,23 +511,32 @@ public class ManagementEducational extends BorderPane {
             -fx-border-radius: 20;
         """);
 
+        DropShadow shadow = new DropShadow();
+        shadow.setOffsetX(15);
+        shadow.setOffsetY(12);
+        shadow.setRadius(20);
+        shadow.setColor(Color.rgb(200, 193, 193, 0.34));
+        pane.setEffect(shadow);
+
         // Titlu
         Label lblTitle = new Label("Student's List");
         lblTitle.setFont(Fonts.RobotoMonoBold32);
         lblTitle.setStyle("-fx-text-fill: #272A31;");
-        AnchorPane.setTopAnchor(lblTitle, 30.0);
+        AnchorPane.setTopAnchor(lblTitle, 50.0);
         AnchorPane.setLeftAnchor(lblTitle, 194.0);
 
         // Creare tabel
         TableView<Elev> table = new TableView<>();
         table.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
-        table.setPrefHeight(450);
+        table.setPrefHeight(350);
+
         table.setStyle("""
         -fx-background-color: #F8F9FA;
         -fx-border-color: #B0B0B0;
         -fx-border-width: 1;
         -fx-table-cell-border-color: #B0B0B0;
-        -fx-font-size: 13px;
+        -fx-font-family: Roboto Mono;
+        -fx-font-size: 12px;
         -fx-selection-bar: #DEE2E6;
         -fx-selection-bar-non-focused: #E9ECEF;
     """);
@@ -532,7 +560,7 @@ public class ManagementEducational extends BorderPane {
 
         TableColumn<Elev, Date> colData = new TableColumn<>("Data Nașterii");
         colData.setCellValueFactory(new PropertyValueFactory<>("dataNasterii"));
-        colData.setPrefWidth(80);
+        colData.setPrefWidth(77);
 
         TableColumn<Elev, String> colIDNP = new TableColumn<>("IDNP");
         colIDNP.setCellValueFactory(new PropertyValueFactory<>("idnp"));
@@ -540,11 +568,11 @@ public class ManagementEducational extends BorderPane {
 
         TableColumn<Elev, String> colEmail = new TableColumn<>("Email");
         colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
-        colEmail.setPrefWidth(160);
+        colEmail.setPrefWidth(158);
 
         TableColumn<Elev, String> colTelefon = new TableColumn<>("Telefon");
         colTelefon.setCellValueFactory(new PropertyValueFactory<>("telefon"));
-        colTelefon.setPrefWidth(80);
+        colTelefon.setPrefWidth(75);
 
         table.getColumns().addAll(colId, colNume, colPrenume, colPatronimic, colData, colIDNP, colEmail, colTelefon);
 
@@ -599,13 +627,357 @@ public class ManagementEducational extends BorderPane {
 
         // Adăugăm componentele în AnchorPane
         pane.getChildren().addAll(lblTitle, table);
-        AnchorPane.setTopAnchor(table, 100.0);
-        AnchorPane.setBottomAnchor(table, 20.0);
-        AnchorPane.setLeftAnchor(table, 20.0);
-        AnchorPane.setRightAnchor(table, 20.0);
+        AnchorPane.setTopAnchor(table, 150.0);
+        AnchorPane.setLeftAnchor(table, 25.0);
+        AnchorPane.setRightAnchor(table, 25.0);
 
         return pane;
     }
+
+
+
+
+    public VBox createDeleteElevPane() {
+        VBox vbox = new VBox(30); // 20px spacing între componente
+        vbox.setPrefSize(700, 350);
+        vbox.setPadding(new Insets(40, 50, 40, 50));
+        vbox.setAlignment(Pos.CENTER);
+        vbox.setStyle("""
+        -fx-background-color: #F2F2F2;
+        -fx-background-radius: 20;
+        -fx-border-color: #B0B0B0;
+        -fx-border-width: 1;
+        -fx-border-radius: 20;
+    """);
+
+        DropShadow shadow = new DropShadow();
+        shadow.setOffsetX(15);
+        shadow.setOffsetY(12);
+        shadow.setRadius(20);
+        shadow.setColor(Color.rgb(200, 193, 193, 0.34));
+        vbox.setEffect(shadow);
+
+        // Titlu
+        Label lblTitle = new Label("Delete Student");
+        lblTitle.setFont(Fonts.RobotoMonoBold32);
+        lblTitle.setStyle("-fx-text-fill: #272A31;");
+
+        // HBox pentru ID + TextField
+        HBox hBoxId = new HBox(15);
+        hBoxId.setAlignment(Pos.CENTER);
+        Label lblId = new Label("Student ID:");
+        lblId.setFont(Fonts.RobotoMonoMedium16);
+        lblId.setStyle("-fx-text-fill: #272A31;");
+
+        TextField txtId = new TextField();
+        txtId.setPromptText("Introdu ID-ul elevului");
+        txtId.setPrefWidth(250);
+        txtId.setStyle("""
+        -fx-background-color: #FFFFFF;
+        -fx-border-color: #B0B0B0;
+        -fx-border-radius: 10;
+        -fx-background-radius: 10;
+        -fx-font-family: 'Roboto Mono';
+        -fx-font-size: 14px;
+    """);
+
+        hBoxId.getChildren().addAll(lblId, txtId);
+
+        // Buton Delete
+        Button btnDelete = new Button("Delete");
+        btnDelete.setPrefSize(150, 40);
+        btnDelete.setStyle("""
+        -fx-background-color: #DC3545;
+        -fx-text-fill: white;
+        -fx-font-family: 'Roboto Mono';
+        -fx-font-size: 16px;
+        -fx-background-radius: 15;
+    """);
+        btnDelete.setOnMouseEntered(e -> btnDelete.setStyle("""
+        -fx-background-color: #C82333;
+        -fx-text-fill: white;
+        -fx-font-family: 'Roboto Mono';
+        -fx-font-size: 16px;
+        -fx-background-radius: 15;
+    """));
+        btnDelete.setOnMouseExited(e -> btnDelete.setStyle("""
+        -fx-background-color: #DC3545;
+        -fx-text-fill: white;
+        -fx-font-family: 'Roboto Mono';
+        -fx-font-size: 16px;
+        -fx-background-radius: 15;
+    """));
+
+        // Etichetă status
+        Label lblStatus = new Label();
+        lblStatus.setFont(Fonts.RobotoMonoMedium14);
+        lblStatus.setStyle("-fx-text-fill: #272A31;");
+
+        // Acțiune Delete
+        btnDelete.setOnAction(e -> {
+            String idText = txtId.getText().trim();
+
+            if (idText.isEmpty()) {
+                lblStatus.setText("Introduceți un ID valid!");
+                lblStatus.setStyle("-fx-text-fill: #DC3545;");
+                return;
+            }
+
+            try {
+                int idElev = Integer.parseInt(idText);
+
+                String sql = "DELETE FROM Elevi WHERE idElev = ?";
+                try (Connection conn = ConnectionDB.getConnection();
+                     PreparedStatement ps = conn.prepareStatement(sql)) {
+
+                    ps.setInt(1, idElev);
+                    int rowsAffected = ps.executeUpdate();
+
+                    if (rowsAffected > 0) {
+                        lblStatus.setText("Elevul a fost șters cu succes!");
+                        lblStatus.setStyle("-fx-text-fill: #28A745;");
+                        txtId.clear();
+                    } else {
+                        lblStatus.setText("Nu există elev cu acest ID!");
+                        lblStatus.setStyle("-fx-text-fill: #DC3545;");
+                    }
+                }
+            } catch (NumberFormatException ex) {
+                lblStatus.setText("ID-ul trebuie să fie numeric!");
+                lblStatus.setStyle("-fx-text-fill: #DC3545;");
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                lblStatus.setText("Eroare la ștergerea elevului!");
+                lblStatus.setStyle("-fx-text-fill: #DC3545;");
+            }
+        });
+
+        vbox.getChildren().addAll(lblTitle, hBoxId, btnDelete, lblStatus);
+        return vbox;
+    }
+
+
+
+    private AnchorPane UpdateStudent() {
+        AnchorPane pane = new AnchorPane();
+        pane.setPrefSize(700, 550);
+        pane.setStyle("""
+        -fx-background-color: #F2F2F2;
+        -fx-background-radius: 20;
+        -fx-border-color: #B0B0B0;
+        -fx-border-width: 1;
+        -fx-border-radius: 20;
+    """);
+
+        DropShadow shadow = new DropShadow();
+        shadow.setOffsetX(15);
+        shadow.setOffsetY(12);
+        shadow.setRadius(20);
+        shadow.setColor(Color.rgb(200, 193, 193, 0.34));
+        pane.setEffect(shadow);
+
+        // Titlu
+        Label lblTitle = new Label("Update Student");
+        lblTitle.setFont(Fonts.RobotoMonoBold32);
+        lblTitle.setStyle("-fx-text-fill: #272A31;");
+        AnchorPane.setTopAnchor(lblTitle, 30.0);
+        AnchorPane.setLeftAnchor(lblTitle, 220.0);
+
+        // TextField pentru ID-ul elevului
+        TextField txtId = new TextField();
+        txtId.setPromptText("Introduceți ID-ul elevului");
+        txtId.setPrefWidth(250);
+        txtId.setStyle("""
+        -fx-background-color: #FFFFFF;
+        -fx-border-color: #B0B0B0;
+        -fx-border-radius: 10;
+        -fx-background-radius: 10;
+        -fx-font-family: 'Roboto Mono';
+        -fx-font-size: 14px;
+    """);
+        AnchorPane.setTopAnchor(txtId, 100.0);
+        AnchorPane.setLeftAnchor(txtId, 220.0);
+
+        // Buton pentru încărcarea datelor elevului
+        Button btnLoad = new Button("Load Student");
+        btnLoad.setStyle("""
+        -fx-background-color: #0D6EFD;
+        -fx-text-fill: white;
+        -fx-background-radius: 10;
+        -fx-font-family: 'Roboto Mono';
+        -fx-font-size: 14px;
+    """);
+        btnLoad.setPrefSize(150, 35);
+        AnchorPane.setTopAnchor(btnLoad, 140.0);
+        AnchorPane.setLeftAnchor(btnLoad, 275.0);
+
+        pane.getChildren().addAll(lblTitle, txtId, btnLoad);
+
+        btnLoad.setOnAction(e -> {
+            String idText = txtId.getText().trim();
+            if (idText.isEmpty()) {
+                System.out.println("Introduceți un ID valid!");
+                return;
+            }
+
+            try {
+                int idElev = Integer.parseInt(idText);
+
+                // Citim datele elevului din baza de date
+                String sql = "SELECT * FROM Elevi WHERE idElev = ?";
+                try (Connection conn = ConnectionDB.getConnection();
+                     PreparedStatement ps = conn.prepareStatement(sql)) {
+
+                    ps.setInt(1, idElev);
+                    ResultSet rs = ps.executeQuery();
+
+                    if (rs.next()) {
+                        // Curățăm panoul pentru a afișa formularul de update
+                        pane.getChildren().clear();
+
+                        // Re-adăugăm titlul
+                        pane.getChildren().add(lblTitle);
+
+                        // Creăm câmpurile precompletate
+                        Label lblNume = new Label("Nume:");
+                        lblNume.setFont(Fonts.RobotoMonoMedium20);
+                        lblNume.setStyle("-fx-text-fill: #272A31;");
+                        TextField txtNume = createStyledTextField();
+                        txtNume.setText(rs.getString("numeElev"));
+
+                        Label lblPrenume = new Label("Prenume:");
+                        lblPrenume.setFont(Fonts.RobotoMonoMedium20);
+                        lblPrenume.setStyle("-fx-text-fill: #272A31;");
+                        TextField txtPrenume = createStyledTextField();
+                        txtPrenume.setText(rs.getString("prenumeElev"));
+
+                        Label lblPatronimic = new Label("Patronimic:");
+                        lblPatronimic.setFont(Fonts.RobotoMonoMedium20);
+                        lblPatronimic.setStyle("-fx-text-fill: #272A31;");
+                        TextField txtPatronimic = createStyledTextField();
+                        txtPatronimic.setText(rs.getString("patronimicElev"));
+
+                        Label lblData = new Label("Data nașterii:");
+                        lblData.setFont(Fonts.RobotoMonoMedium20);
+                        lblData.setStyle("-fx-text-fill: #272A31;");
+                        TextField txtData = createStyledTextField();
+                        txtData.setText(rs.getDate("DataNasterii").toString());
+
+                        Label lblIDNP = new Label("IDNP:");
+                        lblIDNP.setFont(Fonts.RobotoMonoMedium20);
+                        lblIDNP.setStyle("-fx-text-fill: #272A31;");
+                        TextField txtIDNP = createStyledTextField();
+                        txtIDNP.setText(rs.getString("IDNP"));
+
+                        Label lblEmail = new Label("Email:");
+                        lblEmail.setFont(Fonts.RobotoMonoMedium20);
+                        lblEmail.setStyle("-fx-text-fill: #272A31;");
+                        TextField txtEmail = createStyledTextField();
+                        txtEmail.setText(rs.getString("email"));
+
+                        Label lblTelefon = new Label("Telefon:");
+                        lblTelefon.setFont(Fonts.RobotoMonoMedium20);
+                        lblTelefon.setStyle("-fx-text-fill: #272A31;");
+                        TextField txtTelefon = createStyledTextField();
+                        txtTelefon.setText(rs.getString("telefon"));
+
+                        // Buton Update
+                        Button btnUpdate = new Button("Update");
+                        btnUpdate.setStyle("""
+                        -fx-background-color: #28A745;
+                        -fx-text-fill: white;
+                        -fx-background-radius: 5;
+                        -fx-font-family: 'Roboto Mono';
+                        -fx-font-size: 16px;
+                    """);
+                        btnUpdate.setPrefSize(250, 45);
+
+                        // Poziționare
+                        AnchorPane.setTopAnchor(lblNume, 100.0);
+                        AnchorPane.setLeftAnchor(lblNume, 50.0);
+                        AnchorPane.setTopAnchor(txtNume, 135.0);
+                        AnchorPane.setLeftAnchor(txtNume, 50.0);
+
+                        AnchorPane.setTopAnchor(lblPrenume, 185.0);
+                        AnchorPane.setLeftAnchor(lblPrenume, 50.0);
+                        AnchorPane.setTopAnchor(txtPrenume, 220.0);
+                        AnchorPane.setLeftAnchor(txtPrenume, 50.0);
+
+                        AnchorPane.setTopAnchor(lblPatronimic, 270.0);
+                        AnchorPane.setLeftAnchor(lblPatronimic, 50.0);
+                        AnchorPane.setTopAnchor(txtPatronimic, 305.0);
+                        AnchorPane.setLeftAnchor(txtPatronimic, 50.0);
+
+                        AnchorPane.setTopAnchor(lblData, 365.0);
+                        AnchorPane.setLeftAnchor(lblData, 50.0);
+                        AnchorPane.setTopAnchor(txtData, 400.0);
+                        AnchorPane.setLeftAnchor(txtData, 50.0);
+
+                        AnchorPane.setTopAnchor(lblIDNP, 100.0);
+                        AnchorPane.setLeftAnchor(lblIDNP, 380.0);
+                        AnchorPane.setTopAnchor(txtIDNP, 135.0);
+                        AnchorPane.setLeftAnchor(txtIDNP, 380.0);
+
+                        AnchorPane.setTopAnchor(lblEmail, 185.0);
+                        AnchorPane.setLeftAnchor(lblEmail, 380.0);
+                        AnchorPane.setTopAnchor(txtEmail, 220.0);
+                        AnchorPane.setLeftAnchor(txtEmail, 380.0);
+
+                        AnchorPane.setTopAnchor(lblTelefon, 270.0);
+                        AnchorPane.setLeftAnchor(lblTelefon, 380.0);
+                        AnchorPane.setTopAnchor(txtTelefon, 305.0);
+                        AnchorPane.setLeftAnchor(txtTelefon, 380.0);
+
+                        AnchorPane.setTopAnchor(btnUpdate, 400.0);
+                        AnchorPane.setLeftAnchor(btnUpdate, 380.0);
+
+                        pane.getChildren().addAll(lblNume, txtNume, lblPrenume, txtPrenume,
+                                lblPatronimic, txtPatronimic, lblData, txtData,
+                                lblIDNP, txtIDNP, lblEmail, txtEmail, lblTelefon, txtTelefon,
+                                btnUpdate);
+
+                        // Acțiune Update
+                        btnUpdate.setOnAction(ev -> {
+                            try {
+                                String sqlUpdate = "UPDATE Elevi SET numeElev = ?, prenumeElev = ?, patronimicElev = ?, " +
+                                        "DataNasterii = ?, IDNP = ?, email = ?, telefon = ? WHERE idElev = ?";
+                                try (PreparedStatement psUpdate = ConnectionDB.getConnection().prepareStatement(sqlUpdate)) {
+                                    psUpdate.setString(1, txtNume.getText().trim());
+                                    psUpdate.setString(2, txtPrenume.getText().trim());
+                                    psUpdate.setString(3, txtPatronimic.getText().trim());
+                                    psUpdate.setDate(4, Date.valueOf(txtData.getText().trim()));
+                                    psUpdate.setString(5, txtIDNP.getText().trim());
+                                    psUpdate.setString(6, txtEmail.getText().trim());
+                                    psUpdate.setString(7, txtTelefon.getText().trim());
+                                    psUpdate.setInt(8, idElev);
+
+                                    int rows = psUpdate.executeUpdate();
+                                    if (rows > 0) {
+                                        System.out.println("Elevul a fost actualizat cu succes!");
+                                    }
+                                }
+                            } catch (SQLException ex) {
+                                ex.printStackTrace();
+                                System.out.println("Eroare la actualizarea elevului!");
+                            }
+                        });
+
+                    } else {
+                        System.out.println("Nu există elev cu acest ID!");
+                    }
+
+                }
+            } catch (NumberFormatException ex) {
+                System.out.println("ID-ul trebuie să fie numeric!");
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                System.out.println("Eroare la citirea elevului!");
+            }
+        });
+
+        return pane;
+    }
+
 
 
 

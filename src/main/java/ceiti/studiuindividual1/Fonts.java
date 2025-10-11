@@ -16,6 +16,9 @@ public class Fonts {
     public static final Font RobotoMonoRegular14;
     public static final Font RobotoMonoBold32;
     public static final Font RobotoMonoMedium20;
+    public static final Font RobotoMonoMedium16;
+    public static final Font RobotoMonoMedium14;
+
 
     static {
         // --- BOLD ---
@@ -30,6 +33,9 @@ public class Fonts {
 
         // --- MEDIUM ---
         RobotoMonoMedium20 = Font.loadFont(Fonts.class.getResourceAsStream("/fonts/RobotoMono-Medium.ttf"), 20);
+        RobotoMonoMedium16 = Font.loadFont(Fonts.class.getResourceAsStream("/fonts/RobotoMono-Medium.ttf"), 16);
+        RobotoMonoMedium14 = Font.loadFont(Fonts.class.getResourceAsStream("/fonts/RobotoMono-Medium.ttf"), 14);
+
 
         // --- REGULAR ---
         RobotoMonoRegular42 = Font.loadFont(Fonts.class.getResourceAsStream("/fonts/RobotoMono-Regular.ttf"), 42);
