@@ -2,6 +2,7 @@ package ceiti.studiuindividual1;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -30,6 +31,7 @@ public class Main extends Application {
         Scene scene = new Scene(loginScreen, 1200, 800);
         primaryStage.setTitle("Educational Management Aplication");
         primaryStage.setScene(scene);
+        primaryStage.initStyle(StageStyle.UNDECORATED);
         primaryStage.setFullScreen(true);
         primaryStage.show();
     }

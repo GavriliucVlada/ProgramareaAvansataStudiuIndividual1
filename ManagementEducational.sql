@@ -14,6 +14,15 @@ CREATE TABLE Users (
    DOB date NOT NULL
 );
 
+select * from Users
+
+CREATE VIEW vwUserCount AS
+SELECT COUNT(*) AS TotalUsers
+FROM Users;
+
+select * from vwUserCount
+
+
 
 CREATE TABLE Elevi(
    idElev INT IDENTITY(1, 1) PRIMARY KEY NOT NULL,
@@ -26,10 +35,23 @@ CREATE TABLE Elevi(
    telefon VARCHAR(9) NOT NULL
 );
 
+CREATE VIEW vwElevCount AS
+SELECT COUNT(*) AS TotalElevi
+FROM Elevi;
+
+select * from vwElevCount
+
 CREATE TABLE Disciplini(
    idDisciplina int IDENTITY(1, 1) PRIMARY KEY NOT NULL,
    disciplina VARCHAR(70)NOT NULL
 );
+
+CREATE VIEW vwDisciplinaCount AS
+SELECT COUNT(*) AS TotalDiscipline
+FROM Disciplini;
+
+select * from vwDisciplinaCount
+
 
 CREATE TABLE Note(
    idNote int IDENTITY(1, 1) PRIMARY KEY NOT NULL,
@@ -39,4 +61,11 @@ CREATE TABLE Note(
    FOREIGN KEY (idElev) REFERENCES Elevi(idElev),
    FOREIGN KEY (idDisciplina) REFERENCES Disciplini(idDisciplina)
 );
+
+CREATE VIEW vwNoteCount AS
+SELECT COUNT(*) AS TotalNotes
+FROM Note;
+
+select * from vwNoteCount
+
 
