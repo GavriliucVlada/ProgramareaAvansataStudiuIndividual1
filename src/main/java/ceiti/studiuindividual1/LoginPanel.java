@@ -94,7 +94,6 @@ public class LoginPanel extends VBox {
         );
         Hovers.applyButtonHoverBackground(btnLogIn, "#D4737A", "#F27C84", "#F2F2F2");
 
-        // ---------------- LOGICA LOGIN ----------------
         btnLogIn.setOnAction(e -> {
             String username = txtUser.getText().trim();
             String password = txtPsw.getText().trim();
@@ -104,18 +103,15 @@ public class LoginPanel extends VBox {
                 return;
             }
 
-            // Obținem userul din baza de date
             User user = UserDAO.getUser(username, password);
 
             if (user != null) {
                 lblMessage.setTextFill(Color.GREEN);
                 lblMessage.setText("Login reușit!");
 
-                // Creăm ManagementEducational și îl setăm într-o scenă
                 ManagementEducational mainPane = new ManagementEducational(user);
                 Scene mainScene = new Scene(mainPane, 1200, 700);
 
-                // Setăm scena pe Stage-ul curent
                 parent.getStage().setScene(mainScene);
                 parent.getStage().setTitle("Schooling Management");
                 parent.getStage().setMaximized(true);

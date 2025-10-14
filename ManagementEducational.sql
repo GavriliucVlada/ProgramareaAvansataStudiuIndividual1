@@ -35,6 +35,8 @@ CREATE TABLE Elevi(
    telefon VARCHAR(9) NOT NULL
 );
 
+
+
 CREATE VIEW vwElevCount AS
 SELECT COUNT(*) AS TotalElevi
 FROM Elevi;

@@ -40,7 +40,6 @@ public class CreateAccountPanel extends VBox {
         shadow.setColor(Color.rgb(213, 203, 203, 0.25));
         setEffect(shadow);
 
-        // Title
         Label Title = new Label("Create");
         Title.setFont(Fonts.RobotoMonoBold45);
         Title.setStyle("-fx-text-fill: #272A31;");
@@ -48,7 +47,6 @@ public class CreateAccountPanel extends VBox {
         titleContainer.setAlignment(Pos.TOP_CENTER);
         titleContainer.setPadding(new Insets(40, 0, 0, 0));
 
-        // Fields left column
         Label lblUsername = new Label("Username");
         TextField txtUser = createStyledTextField();
         lblUsername.setFont(Fonts.RobotoMonoSemiBold24);
@@ -81,7 +79,6 @@ public class CreateAccountPanel extends VBox {
         addMargin(container1, lblUsername, txtUser, lblFirstName, txtFirstName,
                 lblLastName, txtLastName, lblEmail, txtEmail);
 
-        // Fields right column
         Label lblPassword = new Label("Password");
         TextField txtPsw = createStyledTextField();
         lblPassword.setFont(Fonts.RobotoMonoSemiBold24);
@@ -99,7 +96,6 @@ public class CreateAccountPanel extends VBox {
         container2.setPadding(new Insets(10, 55, 0, 34));
         addMargin(container2, lblPassword, txtPsw, lblDOB, txtDOB);
 
-        // Avatar
         Image defaultImage = new Image(getClass().getResource("/images/userDefault.png").toExternalForm());
         ImageView avatarView = new ImageView(defaultImage);
         avatarView.setFitWidth(60);
@@ -140,7 +136,6 @@ public class CreateAccountPanel extends VBox {
         VBox container3 = new VBox(ppPanel, container2);
         container3.setPadding(new Insets(20, 0, 10, 0));
 
-        // Buttons
         Button btnCreate = new Button("Create");
         btnCreate.setPrefSize(145, 45);
         btnCreate.setFont(Fonts.RobotoMonoSemiBold24);
@@ -149,16 +144,14 @@ public class CreateAccountPanel extends VBox {
 
 
         btnCreate.setOnAction(event -> {
-            // Preluăm datele introduse de utilizator
             String username = txtUser.getText();
             String firstName = txtFirstName.getText();
             String lastName = txtLastName.getText();
             String email = txtEmail.getText();
             String password = txtPsw.getText();
-            String dob = txtDOB.getText(); // Format corect: yyyy-MM-dd
-            String avatarPath = avatarView.getImage().getUrl(); // calea imaginii
+            String dob = txtDOB.getText();
+            String avatarPath = avatarView.getImage().getUrl();
 
-            // Validăm datele (simplu)
             if(username.isEmpty() || firstName.isEmpty() || lastName.isEmpty() ||
                     email.isEmpty() || password.isEmpty() || dob.isEmpty() || avatarPath == null) {
                 System.out.println("Completați toate câmpurile!");
@@ -166,11 +159,9 @@ public class CreateAccountPanel extends VBox {
             }
 
             try {
-                // Apelăm UserDAO pentru a salva utilizatorul în baza de date
                 UserDAO.createUser(username, password, avatarPath, firstName, lastName, email, dob);
                 System.out.println("User creat cu succes!");
 
-                // După ce s-a creat contul, revenim la pagina de logare
                 parent.switchToPanel(parent.getLoginPanel());
             } catch (IllegalArgumentException ex) {
                 System.out.println("Data introdusă nu este validă: " + dob);
@@ -191,7 +182,6 @@ public class CreateAccountPanel extends VBox {
 
         container2.getChildren().add(btnsContainer);
 
-        // Combine containers
         HBox rowContainer = new HBox(container1, container3);
         rowContainer.setAlignment(Pos.CENTER);
         rowContainer.setSpacing(0);
@@ -214,7 +204,6 @@ public class CreateAccountPanel extends VBox {
             VBox.setMargin(nodes[i], new Insets(0, 0, 3, 0));
             VBox.setMargin(nodes[i + 1], new Insets(0, 0, 15, 0));
         }
-        // Ultimul TextField să aibă margin special (pentru DOB)
         if (nodes.length >= 2) {
             VBox.setMargin(nodes[nodes.length - 1], new Insets(0, 0, 47, 0));
         }

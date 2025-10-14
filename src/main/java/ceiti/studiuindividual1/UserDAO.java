@@ -8,13 +8,12 @@ import java.sql.Date;
 
 public class UserDAO {
 
-    /**
-     * Creează un utilizator în baza de date.
-     */
+
+
     public static void createUser(String username, String password, String avatarPath,
                                   String nume, String prenume, String email, String dob) {
 
-        // Validăm data înainte de a o folosi
+
         Date dateOfBirth;
         try {
             dateOfBirth = Date.valueOf(dob.trim());
@@ -23,7 +22,7 @@ public class UserDAO {
             return;
         }
 
-        // Validăm calea avatarului
+
         if (avatarPath == null || avatarPath.isEmpty()) {
             System.err.println("❌ Avatar invalid: " + avatarPath);
             return;
@@ -54,9 +53,8 @@ public class UserDAO {
         }
     }
 
-    /**
-     * Verifică login-ul fără a returna userul.
-     */
+
+
     public static boolean checkLogin(String username, String password) {
         String sql = "SELECT * FROM Users WHERE userName = ? AND passwordUser = ?";
 
@@ -75,9 +73,8 @@ public class UserDAO {
         return false;
     }
 
-    /**
-     * Returnează obiectul User cu prenume și imagine.
-     */
+
+
     public static User getUser(String username, String password) {
         User user = null;
         String sql = "SELECT prenume, nume, imagine FROM Users WHERE userName = ? AND passwordUser = ?";
@@ -92,7 +89,7 @@ public class UserDAO {
             if (rs.next()) {
                 String prenume = rs.getString("prenume");
                 String nume = rs.getString("nume");
-                String imagine = rs.getString("imagine"); // calea absolută
+                String imagine = rs.getString("imagine");
                 user = new User(prenume, nume, imagine);
             }
 

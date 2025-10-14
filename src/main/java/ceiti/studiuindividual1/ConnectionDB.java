@@ -6,7 +6,6 @@ import java.sql.SQLException;
 
 public class ConnectionDB {
 
-    // 🔹 Conexiune locală cu Windows Authentication
     static final String URL =
             "jdbc:sqlserver://localhost\\SQLEXPRESS;databaseName=ManagementEducational;"
                     + "integratedSecurity=true;trustServerCertificate=true;";

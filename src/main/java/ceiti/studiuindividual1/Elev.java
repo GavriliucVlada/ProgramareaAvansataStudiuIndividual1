@@ -24,7 +24,6 @@ public class Elev {
         this.telefon = telefon;
     }
 
-    // Getteri
     public int getIdElev() { return idElev; }
     public String getNumeElev() { return numeElev; }
     public String getPrenumeElev() { return prenumeElev; }

@@ -2,10 +2,14 @@ package ceiti.studiuindividual1;
 
 
 import javafx.application.Platform;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.effect.DropShadow;
@@ -18,6 +22,7 @@ import javafx.scene.text.Font;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 
 public class ManagementEducational extends BorderPane {
@@ -35,13 +40,11 @@ public class ManagementEducational extends BorderPane {
     }
 
     private void initUI() {
-        // --- LEFT PANEL ---
         VBox leftPanel = new VBox(15);
         leftPanel.setPadding(new Insets(20));
         leftPanel.setPrefWidth(250);
         leftPanel.setStyle("-fx-background-color: rgba(54,56,68,1);");
 
-        // --- TOP LEFT BOX ---
         StackPane topLeftBox = new StackPane();
         topLeftBox.setPrefSize(250, 40);
         topLeftBox.setStyle("-fx-background-color: rgba(212,115,122,1);");
@@ -51,7 +54,6 @@ public class ManagementEducational extends BorderPane {
         lblSchooling.setFont(Font.font("Roboto Mono", 18));
         topLeftBox.getChildren().add(lblSchooling);
 
-        // --- TOP BAR ---
         BorderPane topBar = new BorderPane();
         topBar.setPrefHeight(40);
         topBar.setStyle("-fx-background-color: white;");
@@ -74,15 +76,18 @@ public class ManagementEducational extends BorderPane {
         rightBox.getChildren().addAll(lblUser, lblName, avatarView);
         topBar.setRight(rightBox);
 
-        // --- MAIN PANEL (centru) ---
         VBox mainPanel = new VBox(20);
         mainPanel.setStyle("-fx-background-color: rgba(242,242,242,1);");
         mainPanel.setPadding(new Insets(20, 20, 20, 20));
 
+        GridPane actionCards = new GridPane();
+        AnchorPane container1 = new AnchorPane();
+        VBox container2 = new VBox(actionCards);
 
+        container1.setMaxSize(700, 600);
+        container1.setPrefSize(700, 600);
+        container1.setMinSize(700, 600);
 
-
-        // === DASHBOARD: 4 CARDURI DE STATISTICI ===
         HBox statsBox = new HBox(40);
         statsBox.setAlignment(Pos.CENTER);
         statsBox.setPadding(new Insets(20, 40, 20, 40));
@@ -96,42 +101,68 @@ public class ManagementEducational extends BorderPane {
 
         statsBox.getChildren().addAll(cardStudents, cardEmployees, cardSubjects, cardHolidays);
 
-        // === NOUA SECȚIUNE: 4 CARDURI DE ACȚIUNE (mai mici, fără panou alb mare) ===
-        GridPane actionCards = new GridPane();
+
         actionCards.setHgap(10);
         actionCards.setVgap(10);
         actionCards.setAlignment(Pos.CENTER_RIGHT);
         actionCards.setPadding(new Insets(0, 20, 0, 0));
         actionCards.setStyle("-fx-background-color: transparent;");
 
-        actionCards.add(createActionCard("Add Student", "/images/addS.png"), 0, 0);
-        actionCards.add(createActionCard("Add Employee", "/images/addE.png"), 1, 0);
-        actionCards.add(createActionCard("Plan Academic Calendar", "/images/addC.png"), 0, 1);
-        actionCards.add(createActionCard("Send Announcement", "/images/addM.png"), 1, 1);
+        Node topStudentsCard = createActionCard("Top Students", "/images/addS.png");
+        topStudentsCard.setOnMouseClicked(e -> {
+            AnchorPane topPane = createTopEleviPane();
+
+            container1.getChildren().clear();
+            container1.getChildren().setAll(topPane);
+        });
+        actionCards.add(topStudentsCard, 0, 0);
+
+        Node avgGradeCard = createActionCard("Average Grade", "/images/addE.png");
+        avgGradeCard.setOnMouseClicked(e -> {
+            AnchorPane avgPane = createAverageGradePane();
+            container1.getChildren().clear();
+            container1.getChildren().setAll(avgPane);
+        });
+        actionCards.add(avgGradeCard, 1, 0);
 
 
 
-        AnchorPane container1 = new AnchorPane();
-        VBox container2 = new VBox(actionCards);
+        Node RegisterCard = createActionCard("Register", "/images/addC.png");
+        RegisterCard.setOnMouseClicked(e -> {
+            VBox RegPane = createRegistruPane();
+            container1.getChildren().clear();
+            container1.getChildren().setAll(RegPane);
+        });
+        actionCards.add(RegisterCard, 0, 1);
 
-        container1.setMaxSize(700, 600);
-        container1.setPrefSize(700, 600);
-        container1.setMinSize(700, 600);
+
+
+
+
+        Node subjectsCard = createActionCard("Subjects", "/images/addM.png");
+        subjectsCard.setOnMouseClicked(e -> {
+            VBox subjectsPane = createSubjectsVBox();
+
+            container1.getChildren().clear();
+            container1.getChildren().setAll(subjectsPane);
+        });
+        actionCards.add(subjectsCard, 1, 1);
+
+
+
+
 
 
         HBox container = new HBox(container1, container2);
         container2.setPadding(new Insets(0,10,0,20));
 
 
-        // === ADAUGĂ ÎN MAIN PANEL ===
         mainPanel.getChildren().addAll(statsBox, container);
 
-        // --- TOP CONTAINER ---
         BorderPane topContainer = new BorderPane();
         topContainer.setLeft(topLeftBox);
         topContainer.setCenter(topBar);
 
-        // --- LEFT MENU ---
         RoundedButton btnStudent = new RoundedButton("Student", "/images/studentapp.png");
 
         VBox studentSubMenu = new VBox(10);
@@ -198,7 +229,65 @@ public class ManagementEducational extends BorderPane {
             }
         });
 
-        RoundedButton btnEmployee = new RoundedButton("Employee", "/images/admin.png");
+
+
+
+        RoundedButton btnEmployee = new RoundedButton("Register", "/images/admin.png");
+
+        VBox gradeSubMenu = new VBox(10);
+        gradeSubMenu.setPadding(new Insets(0, 0, 0, 20));
+        gradeSubMenu.setVisible(false);
+        gradeSubMenu.managedProperty().bind(gradeSubMenu.visibleProperty());
+
+        RoundedButton btnAfisareGrade = new RoundedButton("Show", null);
+        btnAfisareGrade.setStyle("-fx-background-color: #4E5665; -fx-background-radius: 10;");
+        btnAfisareGrade.setOnAction(e -> {
+
+            VBox RegPane = createRegistruPane();
+            container1.getChildren().clear();
+            container1.getChildren().setAll(RegPane);
+        });
+
+        RoundedButton btnAdaugareGrade = new RoundedButton("Add Grade", null);
+        btnAdaugareGrade.setStyle("-fx-background-color: #4E5665; -fx-background-radius: 10;");
+        btnAdaugareGrade.setOnAction(e -> {
+            VBox addGradePane = AddGrade();
+            container1.getChildren().clear();
+            container1.getChildren().add(addGradePane);
+        });
+
+// Buton Delete Grade
+        RoundedButton btnStergereGrade = new RoundedButton("Delete Grade", null);
+        btnStergereGrade.setStyle("-fx-background-color: #4E5665; -fx-background-radius: 10;");
+        btnStergereGrade.setOnAction(e -> {
+            VBox deleteGradePane = createDeleteGradePane();
+            container1.getChildren().clear();
+            container1.getChildren().add(deleteGradePane);
+        });
+
+// Buton Modify Grade
+        RoundedButton btnModificareGrade = new RoundedButton("Modify Grade", null);
+        btnModificareGrade.setStyle("-fx-background-color: #4E5665; -fx-background-radius: 10;");
+        btnModificareGrade.setOnAction(e -> {
+            VBox modifyGradePane = UpdateGrade();
+            container1.getChildren().clear();
+            container1.getChildren().add(modifyGradePane);
+        });
+
+// Adaugă toate butoanele în sub-meniu
+        gradeSubMenu.getChildren().addAll(btnAfisareGrade, btnAdaugareGrade, btnStergereGrade, btnModificareGrade);
+
+// Funcționalitate toggle sub-meniu
+        btnEmployee.setOnAction(e -> {
+            boolean visible = gradeSubMenu.isVisible();
+            gradeSubMenu.setVisible(!visible);
+            if (!visible) {
+                btnEmployee.setStyle("-fx-background-color: #6C7A89; -fx-background-radius: 15;");
+            } else {
+                btnEmployee.setStyle("-fx-background-color: rgba(39,42,49,1); -fx-background-radius: 15;");
+            }
+        });
+
 
         addHoverEffect(btnStudent, "rgba(39,42,49,1)", "#6C7A89");
         addHoverEffect(btnEmployee, "rgba(39,42,49,1)", "#6C7A89");
@@ -213,22 +302,19 @@ public class ManagementEducational extends BorderPane {
         btnClose.setOnAction(e -> Platform.exit());
 
 
-        leftPanel.getChildren().addAll(btnStudent, studentSubMenu, btnEmployee, btnClose);
+        leftPanel.getChildren().addAll(btnStudent, studentSubMenu, btnEmployee, gradeSubMenu, btnClose);
 
-        // --- FINAL ROOT ---
         setLeft(leftPanel);
         setTop(topContainer);
         setCenter(mainPanel);
     }
 
-    // === EFECT HOVER ===
     private void addHoverEffect(RoundedButton button, String normalColor, String hoverColor) {
         button.setStyle("-fx-background-color: " + normalColor + "; -fx-background-radius: 15; -fx-text-fill: white;");
         button.setOnMouseEntered(e -> button.setStyle("-fx-background-color: " + hoverColor + "; -fx-background-radius: 15; -fx-text-fill: white;"));
         button.setOnMouseExited(e -> button.setStyle("-fx-background-color: " + normalColor + "; -fx-background-radius: 15; -fx-text-fill: white;"));
     }
 
-    // === CARD STATISTIC ===
     private VBox createStatCard(String iconPath, String number, String labelText, String color) {
         VBox card = new VBox();
         card.setAlignment(Pos.CENTER_LEFT);
@@ -275,7 +361,6 @@ public class ManagementEducational extends BorderPane {
         return card;
     }
 
-    // === CARD DE ACȚIUNE ===
     private VBox createActionCard(String text, String iconPath) {
         VBox card = new VBox(8);
         card.setAlignment(Pos.CENTER);
@@ -308,12 +393,12 @@ public class ManagementEducational extends BorderPane {
         AnchorPane pane = new AnchorPane();
         pane.setPrefSize(700, 550);
         pane.setStyle("""
-            -fx-background-color: #F2F2F2;
-            -fx-background-radius: 20;
-            -fx-border-color: #B0B0B0;
-            -fx-border-width: 1;
-            -fx-border-radius: 20;
-        """);
+        -fx-background-color: white;
+        -fx-background-radius: 20;
+        -fx-border-color: #B0B0B0;
+        -fx-border-width: 1;
+        -fx-border-radius: 20;
+    """);
         DropShadow shadow = new DropShadow();
         shadow.setOffsetX(15);
         shadow.setOffsetY(12);
@@ -329,7 +414,6 @@ public class ManagementEducational extends BorderPane {
         AnchorPane.setLeftAnchor(Title, 250.0);
 
 
-        // Etichete
         Label lblNume = new Label("Nume:");
         lblNume.setFont(Fonts.RobotoMonoMedium20);
         lblNume.setStyle("-fx-text-fill: #272A31;");
@@ -360,8 +444,6 @@ public class ManagementEducational extends BorderPane {
 
 
 
-
-        // Câmpuri
         TextField txtNume = createStyledTextField();
 
         TextField txtPrenume = createStyledTextField();
@@ -378,7 +460,6 @@ public class ManagementEducational extends BorderPane {
 
         TextField txtTelefon = createStyledTextField();
 
-        // Buton Adaugă
         Button btnAdd = new Button("Add");
         btnAdd.setStyle("-fx-background-color: #363844; -fx-text-fill: white; -fx-background-radius: 5; -fx-border-radius: 5;");
         btnAdd.setFont(Fonts.RobotoMonoMedium20);
@@ -386,7 +467,6 @@ public class ManagementEducational extends BorderPane {
         btnAdd.setMinSize(250, 45);
         btnAdd.setMaxSize(250, 45);
 
-        // Poziționare
         AnchorPane.setTopAnchor(lblNume, 124.0);
         AnchorPane.setLeftAnchor(lblNume, 70.0);
         AnchorPane.setTopAnchor(txtNume, 161.0);
@@ -429,7 +509,6 @@ public class ManagementEducational extends BorderPane {
                 lblData, dateDataNasterii, lblIDNP, txtIDNP, lblEmail, txtEmail, lblTelefon, txtTelefon,
                 btnAdd);
 
-        // Event pentru butonul Adaugă
         btnAdd.setOnAction(e -> {
             String nume = txtNume.getText().trim();
             String prenume = txtPrenume.getText().trim();
@@ -439,17 +518,14 @@ public class ManagementEducational extends BorderPane {
             String email = txtEmail.getText().trim();
             String telefon = txtTelefon.getText().trim();
 
-            // Verificare câmpuri goale
             if (nume.isEmpty() || prenume.isEmpty() || dataNasterii.isEmpty() ||
                     idnp.isEmpty() || email.isEmpty() || telefon.isEmpty()) {
                 System.out.println("Completați toate câmpurile obligatorii!");
                 return;
             }
 
-            // Conversie dată din text
             Date dateOfBirth;
             try {
-                // Aici poți schimba formatul, de ex. "dd.MM.yyyy"
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                 LocalDate localDate = LocalDate.parse(dataNasterii, formatter);
                 dateOfBirth = Date.valueOf(localDate);
@@ -458,7 +534,6 @@ public class ManagementEducational extends BorderPane {
                 return;
             }
 
-            // Inserare în baza de date
             String sql = "INSERT INTO Elevi (numeElev, prenumeElev, patronimicElev, DataNasterii, IDNP, email, telefon) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
@@ -477,7 +552,6 @@ public class ManagementEducational extends BorderPane {
                 if (rows > 0) {
                     System.out.println("Elev adăugat cu succes!");
 
-                    // Curățare câmpuri
                     txtNume.clear();
                     txtPrenume.clear();
                     txtPatronimic.clear();
@@ -504,12 +578,12 @@ public class ManagementEducational extends BorderPane {
         AnchorPane pane = new AnchorPane();
         pane.setPrefSize(700, 630);
         pane.setStyle("""
-            -fx-background-color: #F2F2F2;
-            -fx-background-radius: 20;
-            -fx-border-color: #B0B0B0;
-            -fx-border-width: 1;
-            -fx-border-radius: 20;
-        """);
+        -fx-background-color: white;
+        -fx-background-radius: 20;
+        -fx-border-color: #B0B0B0;
+        -fx-border-width: 1;
+        -fx-border-radius: 20;
+    """);
 
         DropShadow shadow = new DropShadow();
         shadow.setOffsetX(15);
@@ -518,14 +592,14 @@ public class ManagementEducational extends BorderPane {
         shadow.setColor(Color.rgb(200, 193, 193, 0.34));
         pane.setEffect(shadow);
 
-        // Titlu
+
         Label lblTitle = new Label("Student's List");
         lblTitle.setFont(Fonts.RobotoMonoBold32);
         lblTitle.setStyle("-fx-text-fill: #272A31;");
         AnchorPane.setTopAnchor(lblTitle, 50.0);
         AnchorPane.setLeftAnchor(lblTitle, 194.0);
 
-        // Creare tabel
+
         TableView<Elev> table = new TableView<>();
         table.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
         table.setPrefHeight(350);
@@ -597,7 +671,7 @@ public class ManagementEducational extends BorderPane {
             return row;
         });
 
-        // Date din baza de date
+
         ObservableList<Elev> elevi = FXCollections.observableArrayList();
         String sql = "SELECT idElev, numeElev, prenumeElev, patronimicElev, DataNasterii, IDNP, email, telefon FROM Elevi";
 
@@ -625,7 +699,7 @@ public class ManagementEducational extends BorderPane {
 
         table.setItems(elevi);
 
-        // Adăugăm componentele în AnchorPane
+
         pane.getChildren().addAll(lblTitle, table);
         AnchorPane.setTopAnchor(table, 150.0);
         AnchorPane.setLeftAnchor(table, 25.0);
@@ -638,12 +712,12 @@ public class ManagementEducational extends BorderPane {
 
 
     public VBox createDeleteElevPane() {
-        VBox vbox = new VBox(30); // 20px spacing între componente
+        VBox vbox = new VBox(30);
         vbox.setPrefSize(700, 350);
         vbox.setPadding(new Insets(40, 50, 40, 50));
         vbox.setAlignment(Pos.CENTER);
         vbox.setStyle("""
-        -fx-background-color: #F2F2F2;
+        -fx-background-color: white;
         -fx-background-radius: 20;
         -fx-border-color: #B0B0B0;
         -fx-border-width: 1;
@@ -657,12 +731,10 @@ public class ManagementEducational extends BorderPane {
         shadow.setColor(Color.rgb(200, 193, 193, 0.34));
         vbox.setEffect(shadow);
 
-        // Titlu
         Label lblTitle = new Label("Delete Student");
         lblTitle.setFont(Fonts.RobotoMonoBold32);
         lblTitle.setStyle("-fx-text-fill: #272A31;");
 
-        // HBox pentru ID + TextField
         HBox hBoxId = new HBox(15);
         hBoxId.setAlignment(Pos.CENTER);
         Label lblId = new Label("Student ID:");
@@ -683,7 +755,6 @@ public class ManagementEducational extends BorderPane {
 
         hBoxId.getChildren().addAll(lblId, txtId);
 
-        // Buton Delete
         Button btnDelete = new Button("Delete");
         btnDelete.setPrefSize(150, 40);
         btnDelete.setStyle("""
@@ -708,12 +779,10 @@ public class ManagementEducational extends BorderPane {
         -fx-background-radius: 15;
     """));
 
-        // Etichetă status
         Label lblStatus = new Label();
         lblStatus.setFont(Fonts.RobotoMonoMedium14);
         lblStatus.setStyle("-fx-text-fill: #272A31;");
 
-        // Acțiune Delete
         btnDelete.setOnAction(e -> {
             String idText = txtId.getText().trim();
 
@@ -762,7 +831,7 @@ public class ManagementEducational extends BorderPane {
         AnchorPane pane = new AnchorPane();
         pane.setPrefSize(700, 550);
         pane.setStyle("""
-        -fx-background-color: #F2F2F2;
+        -fx-background-color: white;
         -fx-background-radius: 20;
         -fx-border-color: #B0B0B0;
         -fx-border-width: 1;
@@ -776,14 +845,12 @@ public class ManagementEducational extends BorderPane {
         shadow.setColor(Color.rgb(200, 193, 193, 0.34));
         pane.setEffect(shadow);
 
-        // Titlu
         Label lblTitle = new Label("Update Student");
         lblTitle.setFont(Fonts.RobotoMonoBold32);
         lblTitle.setStyle("-fx-text-fill: #272A31;");
         AnchorPane.setTopAnchor(lblTitle, 30.0);
         AnchorPane.setLeftAnchor(lblTitle, 220.0);
 
-        // TextField pentru ID-ul elevului
         TextField txtId = new TextField();
         txtId.setPromptText("Introduceți ID-ul elevului");
         txtId.setPrefWidth(250);
@@ -798,7 +865,6 @@ public class ManagementEducational extends BorderPane {
         AnchorPane.setTopAnchor(txtId, 100.0);
         AnchorPane.setLeftAnchor(txtId, 220.0);
 
-        // Buton pentru încărcarea datelor elevului
         Button btnLoad = new Button("Load Student");
         btnLoad.setStyle("""
         -fx-background-color: #0D6EFD;
@@ -823,7 +889,6 @@ public class ManagementEducational extends BorderPane {
             try {
                 int idElev = Integer.parseInt(idText);
 
-                // Citim datele elevului din baza de date
                 String sql = "SELECT * FROM Elevi WHERE idElev = ?";
                 try (Connection conn = ConnectionDB.getConnection();
                      PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -832,13 +897,10 @@ public class ManagementEducational extends BorderPane {
                     ResultSet rs = ps.executeQuery();
 
                     if (rs.next()) {
-                        // Curățăm panoul pentru a afișa formularul de update
                         pane.getChildren().clear();
 
-                        // Re-adăugăm titlul
                         pane.getChildren().add(lblTitle);
 
-                        // Creăm câmpurile precompletate
                         Label lblNume = new Label("Nume:");
                         lblNume.setFont(Fonts.RobotoMonoMedium20);
                         lblNume.setStyle("-fx-text-fill: #272A31;");
@@ -881,7 +943,6 @@ public class ManagementEducational extends BorderPane {
                         TextField txtTelefon = createStyledTextField();
                         txtTelefon.setText(rs.getString("telefon"));
 
-                        // Buton Update
                         Button btnUpdate = new Button("Update");
                         btnUpdate.setStyle("""
                         -fx-background-color: #28A745;
@@ -892,7 +953,6 @@ public class ManagementEducational extends BorderPane {
                     """);
                         btnUpdate.setPrefSize(250, 45);
 
-                        // Poziționare
                         AnchorPane.setTopAnchor(lblNume, 100.0);
                         AnchorPane.setLeftAnchor(lblNume, 50.0);
                         AnchorPane.setTopAnchor(txtNume, 135.0);
@@ -936,7 +996,6 @@ public class ManagementEducational extends BorderPane {
                                 lblIDNP, txtIDNP, lblEmail, txtEmail, lblTelefon, txtTelefon,
                                 btnUpdate);
 
-                        // Acțiune Update
                         btnUpdate.setOnAction(ev -> {
                             try {
                                 String sqlUpdate = "UPDATE Elevi SET numeElev = ?, prenumeElev = ?, patronimicElev = ?, " +
@@ -991,5 +1050,849 @@ public class ManagementEducational extends BorderPane {
         txt.setStyle("-fx-text-fill: #272A31; -fx-background-color: transparent; -fx-border-color: #272A31; -fx-border-width: 1; -fx-border-radius: 5; -fx-background-radius: 5;");
         return txt;
     }
+
+
+
+
+
+
+
+    private VBox createSubjectsVBox() {
+        VBox vbox = new VBox(20);
+        vbox.setPadding(new Insets(30, 40, 30, 40));
+        vbox.setPrefSize(700, 600);
+        vbox.setStyle("""
+        -fx-background-color: white;
+        -fx-background-radius: 20;
+        -fx-border-color: #B0B0B0;
+        -fx-border-width: 1;
+        -fx-border-radius: 20;
+    """);
+        vbox.setEffect(new DropShadow(8, Color.rgb(0,0,0,0.15)));
+
+        // Titlu
+        Label lblTitle = new Label("Subjects List");
+        lblTitle.setFont(Fonts.RobotoMonoBold32);
+        lblTitle.setStyle("-fx-text-fill: #272A31;");
+        lblTitle.setAlignment(Pos.CENTER);
+
+        // ScrollPane cu lista de discipline
+        VBox listBox = new VBox(15);
+        listBox.setPadding(new Insets(5, 0, 5, 20));
+
+        List<String> disciplines = DisciplinaDAO.getAllDisciplines();
+        for (String disc : disciplines) {
+            Label lbl = new Label("• " + disc);
+            lbl.setFont(Fonts.RobotoMonoRegular20);
+            lbl.setStyle("-fx-text-fill: #2E2F34;");
+            lbl.setPadding(new Insets(5, 10, 5, 10));
+            lbl.setOnMouseEntered(e -> lbl.setStyle("-fx-text-fill: #0D3B66; -fx-font-weight: bold;"));
+            lbl.setOnMouseExited(e -> lbl.setStyle("-fx-text-fill: #2E2F34;"));
+            listBox.getChildren().add(lbl);
+        }
+
+        ScrollPane scroll = new ScrollPane(listBox);
+        scroll.setFitToWidth(true);
+        scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scroll.setStyle("""
+        -fx-background: transparent;
+        -fx-background-color: transparent;
+        -fx-border-color: transparent;
+        -fx-padding: 0;
+    """);
+
+        VBox.setVgrow(scroll, Priority.ALWAYS);
+
+        vbox.getChildren().addAll(lblTitle, scroll);
+        return vbox;
+    }
+
+
+
+    private ObservableList<ElevTop> getTopElevi() {
+        ObservableList<ElevTop> list = FXCollections.observableArrayList();
+
+        String query = "SELECT * FROM VwTop10Elevi";
+
+        try (Connection conn = ConnectionDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                String nume = rs.getString("numeElev");
+                String prenume = rs.getString("prenumeElev");
+                String patronimic = rs.getString("patronimicElev");
+                double medie = rs.getDouble("medie");
+
+                list.add(new ElevTop(nume, prenume, patronimic, medie));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+
+
+
+    private AnchorPane createTopEleviPane() {
+        AnchorPane pane = new AnchorPane();
+        pane.setPrefSize(700, 600);
+        pane.setStyle("""
+        -fx-background-color: white;
+        -fx-background-radius: 20;
+        -fx-border-color: #B0B0B0;
+        -fx-border-width: 1;
+        -fx-border-radius: 20;
+    """);
+
+        Label lblTitle = new Label("Top 10 Students");
+        lblTitle.setFont(Fonts.RobotoMonoBold32);
+        lblTitle.setStyle("-fx-text-fill: #0D1B2A;");
+        AnchorPane.setTopAnchor(lblTitle, 75.0);
+        AnchorPane.setLeftAnchor(lblTitle, 220.0);
+
+        TableView<ElevTop> table = new TableView<>();
+        table.setItems(getTopElevi());
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        // Coloane
+        TableColumn<ElevTop, String> colNume = new TableColumn<>("Nume");
+        colNume.setCellValueFactory(new PropertyValueFactory<>("nume"));
+
+        TableColumn<ElevTop, String> colPrenume = new TableColumn<>("Prenume");
+        colPrenume.setCellValueFactory(new PropertyValueFactory<>("prenume"));
+
+        TableColumn<ElevTop, String> colPatronimic = new TableColumn<>("Patronimic");
+        colPatronimic.setCellValueFactory(new PropertyValueFactory<>("patronimic"));
+
+        TableColumn<ElevTop, Double> colMedie = new TableColumn<>("Medie");
+        colMedie.setCellValueFactory(new PropertyValueFactory<>("medie"));
+
+        table.getColumns().addAll(colNume, colPrenume, colPatronimic, colMedie);
+
+        // Stilizare TableView
+        table.setStyle(
+                "-fx-font-family: 'Roboto Mono'; " +
+                        "-fx-background-color: #F0F4F8; " +
+                        "-fx-border-color: transparent; " +
+                        "-fx-table-cell-border-color: transparent;"
+        );
+
+        table.setRowFactory(tv -> new TableRow<ElevTop>() {
+            @Override
+            protected void updateItem(ElevTop item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null || empty) {
+                    setStyle("");
+                } else {
+                    if (getIndex() % 2 == 0) {
+                        setStyle("-fx-background-color: #E1EAF6;"); // albastru deschis
+                    } else {
+                        setStyle("-fx-background-color: white;");
+                    }
+
+                    // efect hover
+                    setOnMouseEntered(e -> setStyle("-fx-background-color: #B0C4DE;")); // bleu mediu
+                    setOnMouseExited(e -> {
+                        if (getIndex() % 2 == 0) setStyle("-fx-background-color: #E1EAF6;");
+                        else setStyle("-fx-background-color: white;");
+                    });
+                }
+            }
+        });
+
+        AnchorPane.setTopAnchor(table, 150.0);
+        AnchorPane.setLeftAnchor(table, 70.0);
+        AnchorPane.setRightAnchor(table, 70.0);
+        AnchorPane.setBottomAnchor(table, 160.0);
+
+        pane.getChildren().addAll(lblTitle, table);
+        return pane;
+    }
+
+
+
+
+    private AnchorPane createAverageGradePane() {
+        AnchorPane pane = new AnchorPane();
+        pane.setPrefSize(700, 600);
+        pane.setStyle("""
+        -fx-background-color: white;
+        -fx-background-radius: 20;
+        -fx-border-color: #B0B0B0;
+        -fx-border-width: 1;
+        -fx-border-radius: 20;
+    """);
+        pane.setEffect(new DropShadow(8, Color.rgb(13,27,42,0.2)));
+
+        Label lblTitle = new Label("Average Grade per Subject");
+        lblTitle.setFont(Fonts.RobotoMonoBold32);
+        lblTitle.setStyle("-fx-text-fill: #0D1B2A;");
+        AnchorPane.setTopAnchor(lblTitle, 30.0);
+        AnchorPane.setLeftAnchor(lblTitle, 120.0);
+
+        // ComboBox elevi
+        ComboBox<String> cbElevi = new ComboBox<>();
+        cbElevi.setItems(FXCollections.observableArrayList(MedieDAO.getAllElevi()));
+        cbElevi.setPrefWidth(400);
+        cbElevi.setStyle("-fx-font-size: 16px; -fx-font-family: 'Roboto Mono';");
+        AnchorPane.setTopAnchor(cbElevi, 100.0);
+        AnchorPane.setLeftAnchor(cbElevi, 150.0);
+
+        // TableView pentru mediile disciplinelor
+        TableView<MedieDisciplina> table = new TableView<>();
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        TableColumn<MedieDisciplina, String> colDisciplina = new TableColumn<>("Disciplina");
+        colDisciplina.setCellValueFactory(new PropertyValueFactory<>("disciplina"));
+
+        TableColumn<MedieDisciplina, Double> colMedie = new TableColumn<>("Medie");
+        colMedie.setCellValueFactory(new PropertyValueFactory<>("medie"));
+
+        table.getColumns().addAll(colDisciplina, colMedie);
+
+        // Font mai mare și rânduri alternative
+        table.setRowFactory(tv -> new TableRow<MedieDisciplina>() {
+            @Override
+            protected void updateItem(MedieDisciplina item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null || empty) {
+                    setStyle("");
+                } else {
+                    setStyle("-fx-font-size: 16px; -fx-font-family: 'Roboto Mono';");
+                    if (getIndex() % 2 == 0) setStyle(getStyle() + "; -fx-background-color: #F7FAFC;");
+                    else setStyle(getStyle() + "; -fx-background-color: white;");
+
+                    setOnMouseEntered(e -> setStyle("-fx-background-color: #D0E4F7; -fx-font-size: 16px; -fx-font-family: 'Roboto Mono';"));
+                    setOnMouseExited(e -> {
+                        if (getIndex() % 2 == 0) setStyle("-fx-background-color: #F7FAFC; -fx-font-size: 16px; -fx-font-family: 'Roboto Mono';");
+                        else setStyle("-fx-background-color: white; -fx-font-size: 16px; -fx-font-family: 'Roboto Mono';");
+                    });
+                }
+            }
+        });
+
+        AnchorPane.setTopAnchor(table, 160.0);
+        AnchorPane.setLeftAnchor(table, 50.0);
+        AnchorPane.setRightAnchor(table, 50.0);
+        AnchorPane.setBottomAnchor(table, 50.0);
+
+        // La selectarea unui elev, se încarcă mediile
+        cbElevi.setOnAction(e -> {
+            String selected = cbElevi.getSelectionModel().getSelectedItem();
+            if (selected != null && !selected.isEmpty()) {
+                int idElev = Integer.parseInt(selected.split(" - ")[0]);
+                table.setItems(MedieDAO.getMediiByElev(idElev));
+            }
+        });
+
+        pane.getChildren().addAll(lblTitle, cbElevi, table);
+        return pane;
+    }
+
+
+
+
+
+
+    private VBox createRegistruPane() {
+        VBox pane = new VBox(20);
+        pane.setPadding(new Insets(30));
+        pane.setPrefSize(700, 600);
+
+        pane.setStyle("""
+        -fx-background-color: white;
+        -fx-background-radius: 20;
+        -fx-border-color: #B0B0B0;
+        -fx-border-width: 1;
+        -fx-border-radius: 20;
+    """);
+        pane.setEffect(new DropShadow(8, Color.rgb(0,0,0,0.15)));
+
+        Label lblTitle = new Label("Registru Note");
+        lblTitle.setFont(Fonts.RobotoMonoBold32);
+        lblTitle.setStyle("-fx-text-fill: #272A31;");
+        lblTitle.setAlignment(Pos.CENTER);
+
+        // ComboBox discipline
+        ComboBox<String> cbDisciplina = new ComboBox<>();
+        cbDisciplina.setItems(FXCollections.observableArrayList(RegistruDAO.getAllDisciplines()));
+        cbDisciplina.setPrefWidth(400);
+        cbDisciplina.setStyle("-fx-font-size: 16px; -fx-font-family: 'Roboto Mono';");
+
+        // TableView pentru elevi + note dinamice
+        TableView<ElevNote> table = new TableView<>();
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        // Coloane fixe
+        TableColumn<ElevNote, String> colNume = new TableColumn<>("Nume");
+        colNume.setCellValueFactory(new PropertyValueFactory<>("nume"));
+
+        TableColumn<ElevNote, String> colPrenume = new TableColumn<>("Prenume");
+        colPrenume.setCellValueFactory(new PropertyValueFactory<>("prenume"));
+
+        TableColumn<ElevNote, String> colPatronimic = new TableColumn<>("Patronimic");
+        colPatronimic.setCellValueFactory(new PropertyValueFactory<>("patronimic"));
+
+        table.getColumns().addAll(colNume, colPrenume, colPatronimic);
+
+        // La selectarea disciplinei
+        cbDisciplina.setOnAction(e -> {
+            String discSelect = cbDisciplina.getSelectionModel().getSelectedItem();
+            if (discSelect != null) {
+                int idDisc = cbDisciplina.getSelectionModel().getSelectedIndex() + 1;
+                List<ElevNote> elevi = RegistruDAO.getEleviNoteByDisciplina(idDisc);
+
+                table.getColumns().removeIf(col -> col.getText().startsWith("Nota")); // șterge coloanele vechi
+
+                // găsește nr maxim note
+                int maxNote = elevi.stream().mapToInt(ev -> ev.getNote().size()).max().orElse(0);
+
+                // creează coloane dinamice Nota1, Nota2, ...
+                for (int i = 0; i < maxNote; i++) {
+                    final int idx = i;
+                    TableColumn<ElevNote, Double> colNota = new TableColumn<>("Nota " + (i+1));
+                    colNota.setCellValueFactory(data -> {
+                        List<Double> note = data.getValue().getNote();
+                        return new SimpleObjectProperty<>(idx < note.size() ? note.get(idx) : null);
+                    });
+                    table.getColumns().add(colNota);
+                }
+
+                table.setItems(FXCollections.observableArrayList(elevi));
+            }
+        });
+
+        VBox.setVgrow(table, Priority.ALWAYS);
+        pane.getChildren().addAll(lblTitle, cbDisciplina, table);
+        return pane;
+    }
+
+    private VBox AddGrade() {
+        VBox pane = new VBox(20);
+        pane.setPrefSize(700, 550);
+        pane.setPadding(new Insets(30));
+        pane.setStyle("""
+        -fx-background-color: white;
+        -fx-background-radius: 20;
+        -fx-border-color: #B0B0B0;
+        -fx-border-width: 1;
+        -fx-border-radius: 20;
+    """);
+        pane.setEffect(new DropShadow(8, Color.rgb(0,0,0,0.15)));
+
+        Label lblTitle = new Label("Add Grade");
+        lblTitle.setFont(Font.font("Roboto Mono", 28));
+        lblTitle.setStyle("-fx-text-fill: #272A31;");
+
+        GridPane grid = new GridPane();
+        grid.setHgap(20);
+        grid.setVgap(20);
+        grid.setPadding(new Insets(20));
+
+        // Discipline
+        Label lblDiscipline = new Label("Select Discipline:");
+        lblDiscipline.setFont(Font.font("Roboto Mono", 16));
+        ComboBox<String> cbDiscipline = new ComboBox<>();
+        cbDiscipline.setPrefWidth(250);
+        cbDiscipline.setPromptText("Choose discipline");
+
+        // Elevi
+        Label lblStudent = new Label("Select Student:");
+        lblStudent.setFont(Font.font("Roboto Mono", 16));
+        ComboBox<String> cbStudent = new ComboBox<>();
+        cbStudent.setPrefWidth(250);
+        cbStudent.setPromptText("Choose student");
+
+        // Nota
+        Label lblGrade = new Label("Select Grade:");
+        lblGrade.setFont(Font.font("Roboto Mono", 16));
+        ComboBox<Integer> cbGrade = new ComboBox<>();
+        cbGrade.setPrefWidth(150);
+        cbGrade.getItems().addAll(1,2,3,4,5,6,7,8,9,10);
+
+        // Populare discipline și elevi din DB
+        try (Connection conn = ConnectionDB.getConnection()) {
+            ResultSet rsDisc = conn.createStatement().executeQuery("SELECT disciplina FROM Disciplini");
+            while (rsDisc.next()) {
+                cbDiscipline.getItems().add(rsDisc.getString("disciplina"));
+            }
+
+            ResultSet rsElevi = conn.createStatement().executeQuery(
+                    "SELECT prenumeElev, numeElev, patronimicElev FROM Elevi"
+            );
+            while (rsElevi.next()) {
+                String fullName = rsElevi.getString("prenumeElev") + " " +
+                        rsElevi.getString("numeElev") + " " +
+                        rsElevi.getString("patronimicElev");
+                cbStudent.getItems().add(fullName);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        // Buton Add
+        Button btnAdd = new Button("Add Grade");
+        btnAdd.setFont(Font.font("Roboto Mono", 16));
+        btnAdd.setStyle("-fx-background-color: #5CB85C; -fx-text-fill: white; -fx-background-radius: 10;");
+        btnAdd.setPrefWidth(200);
+
+        btnAdd.setOnAction(e -> {
+            String discipline = cbDiscipline.getValue();
+            String studentFullName = cbStudent.getValue();
+            Integer gradeValue = cbGrade.getValue();
+
+            if (discipline == null || studentFullName == null || gradeValue == null) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Please select discipline, student, and grade.");
+                alert.showAndWait();
+                return;
+            }
+
+            String[] names = studentFullName.split(" ");
+
+            try (Connection conn = ConnectionDB.getConnection()) {
+                // idElev
+                PreparedStatement pstElev = conn.prepareStatement(
+                        "SELECT idElev FROM Elevi WHERE prenumeElev=? AND numeElev=? AND patronimicElev=?"
+                );
+                pstElev.setString(1, names[0]);
+                pstElev.setString(2, names[1]);
+                pstElev.setString(3, names[2]);
+                ResultSet rsElev = pstElev.executeQuery();
+                if (!rsElev.next()) return;
+                int idElev = rsElev.getInt("idElev");
+
+                // idDisciplina
+                PreparedStatement pstDisc = conn.prepareStatement(
+                        "SELECT idDisciplina FROM Disciplini WHERE disciplina=?"
+                );
+                pstDisc.setString(1, discipline);
+                ResultSet rsDisc = pstDisc.executeQuery();
+                if (!rsDisc.next()) return;
+                int idDisciplina = rsDisc.getInt("idDisciplina");
+
+                // Adaugă nota
+                PreparedStatement pstInsert = conn.prepareStatement(
+                        "INSERT INTO Note(nota, idElev, idDisciplina) VALUES(?, ?, ?)"
+                );
+                pstInsert.setInt(1, gradeValue);
+                pstInsert.setInt(2, idElev);
+                pstInsert.setInt(3, idDisciplina);
+
+                int result = pstInsert.executeUpdate();
+                if (result > 0) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "Grade added successfully!");
+                    alert.showAndWait();
+                }
+
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        // Aranjare Grid
+        grid.add(lblDiscipline, 0, 0);
+        grid.add(cbDiscipline, 1, 0);
+        grid.add(lblStudent, 0, 1);
+        grid.add(cbStudent, 1, 1);
+        grid.add(lblGrade, 0, 2);
+        grid.add(cbGrade, 1, 2);
+        grid.add(btnAdd, 1, 3);
+
+        pane.getChildren().addAll(lblTitle, grid);
+        return pane;
+    }
+
+
+
+
+    private VBox createDeleteGradePane() {
+        VBox pane = new VBox(20);
+        pane.setPrefSize(700, 550);
+
+        pane.setPadding(new Insets(30));
+        pane.setStyle("""
+        -fx-background-color: white;
+        -fx-background-radius: 20;
+        -fx-border-color: #B0B0B0;
+        -fx-border-width: 1;
+        -fx-border-radius: 20;
+    """);
+        pane.setEffect(new DropShadow(8, Color.rgb(0,0,0,0.15)));
+
+        Label lblTitle = new Label("Delete Grade");
+        lblTitle.setFont(Font.font("Roboto Mono", 28));
+        lblTitle.setStyle("-fx-text-fill: #272A31;");
+
+        GridPane grid = new GridPane();
+        grid.setHgap(20);
+        grid.setVgap(20);
+        grid.setPadding(new Insets(20));
+
+        // Discipline
+        Label lblDiscipline = new Label("Select Discipline:");
+        lblDiscipline.setFont(Font.font("Roboto Mono", 16));
+        ComboBox<String> cbDiscipline = new ComboBox<>();
+        cbDiscipline.setPrefWidth(250);
+        cbDiscipline.setPromptText("Choose discipline");
+
+        // Elevi
+        Label lblStudent = new Label("Select Student:");
+        lblStudent.setFont(Font.font("Roboto Mono", 16));
+        ComboBox<String> cbStudent = new ComboBox<>();
+        cbStudent.setPrefWidth(250);
+        cbStudent.setPromptText("Choose student");
+
+        // Nota
+        Label lblGrade = new Label("Select Grade:");
+        lblGrade.setFont(Font.font("Roboto Mono", 16));
+        ComboBox<Integer> cbGrade = new ComboBox<>();
+        cbGrade.setPrefWidth(150);
+
+        // Populare discipline și elevi
+        try (Connection conn = ConnectionDB.getConnection()) {
+            ResultSet rsDisc = conn.createStatement().executeQuery("SELECT disciplina FROM Disciplini");
+            while (rsDisc.next()) {
+                cbDiscipline.getItems().add(rsDisc.getString("disciplina"));
+            }
+
+            ResultSet rsElevi = conn.createStatement().executeQuery(
+                    "SELECT prenumeElev, numeElev, patronimicElev FROM Elevi"
+            );
+            while (rsElevi.next()) {
+                String fullName = rsElevi.getString("prenumeElev") + " " +
+                        rsElevi.getString("numeElev") + " " +
+                        rsElevi.getString("patronimicElev");
+                cbStudent.getItems().add(fullName);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        // Populare cbGrade în funcție de disciplină și elev
+        ChangeListener<Object> populateGrade = (obs, oldVal, newVal) -> {
+            cbGrade.getItems().clear();
+            String discipline = cbDiscipline.getValue();
+            String studentFullName = cbStudent.getValue();
+            if (discipline == null || studentFullName == null) return;
+
+            String[] names = studentFullName.split(" ");
+            try (Connection conn = ConnectionDB.getConnection()) {
+                // idElev
+                PreparedStatement pstElev = conn.prepareStatement(
+                        "SELECT idElev FROM Elevi WHERE prenumeElev=? AND numeElev=? AND patronimicElev=?"
+                );
+                pstElev.setString(1, names[0]);
+                pstElev.setString(2, names[1]);
+                pstElev.setString(3, names[2]);
+                ResultSet rsElev = pstElev.executeQuery();
+                if (!rsElev.next()) return;
+                int idElev = rsElev.getInt("idElev");
+
+                // idDisciplina
+                PreparedStatement pstDisc = conn.prepareStatement(
+                        "SELECT idDisciplina FROM Disciplini WHERE disciplina=?"
+                );
+                pstDisc.setString(1, discipline);
+                ResultSet rsDisc = pstDisc.executeQuery();
+                if (!rsDisc.next()) return;
+                int idDisciplina = rsDisc.getInt("idDisciplina");
+
+                // Note existente
+                PreparedStatement pstNote = conn.prepareStatement(
+                        "SELECT nota FROM Note WHERE idElev=? AND idDisciplina=?"
+                );
+                pstNote.setInt(1, idElev);
+                pstNote.setInt(2, idDisciplina);
+                ResultSet rsNote = pstNote.executeQuery();
+                while (rsNote.next()) {
+                    cbGrade.getItems().add(rsNote.getInt("nota"));
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        };
+
+        cbDiscipline.valueProperty().addListener(populateGrade);
+        cbStudent.valueProperty().addListener(populateGrade);
+
+        // Buton Delete
+        Button btnDelete = new Button("Delete Grade");
+        btnDelete.setFont(Font.font("Roboto Mono", 16));
+        btnDelete.setStyle("-fx-background-color: #D9534F; -fx-text-fill: white; -fx-background-radius: 10;");
+        btnDelete.setPrefWidth(200);
+
+        btnDelete.setOnAction(e -> {
+            String discipline = cbDiscipline.getValue();
+            String studentFullName = cbStudent.getValue();
+            Integer gradeValue = cbGrade.getValue();
+
+            if (discipline == null || studentFullName == null || gradeValue == null) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Please select discipline, student, and grade.");
+                alert.showAndWait();
+                return;
+            }
+
+            String[] names = studentFullName.split(" ");
+
+            try (Connection conn = ConnectionDB.getConnection()) {
+                // idElev
+                PreparedStatement pstElev = conn.prepareStatement(
+                        "SELECT idElev FROM Elevi WHERE prenumeElev=? AND numeElev=? AND patronimicElev=?"
+                );
+                pstElev.setString(1, names[0]);
+                pstElev.setString(2, names[1]);
+                pstElev.setString(3, names[2]);
+                ResultSet rsElev = pstElev.executeQuery();
+                if (!rsElev.next()) return;
+                int idElev = rsElev.getInt("idElev");
+
+                // idDisciplina
+                PreparedStatement pstDisc = conn.prepareStatement(
+                        "SELECT idDisciplina FROM Disciplini WHERE disciplina=?"
+                );
+                pstDisc.setString(1, discipline);
+                ResultSet rsDisc = pstDisc.executeQuery();
+                if (!rsDisc.next()) return;
+                int idDisciplina = rsDisc.getInt("idDisciplina");
+
+                // Ștergere nota
+                PreparedStatement pstDelete = conn.prepareStatement(
+                        "DELETE FROM Note WHERE idElev=? AND idDisciplina=? AND nota=?"
+                );
+                pstDelete.setInt(1, idElev);
+                pstDelete.setInt(2, idDisciplina);
+                pstDelete.setInt(3, gradeValue);
+
+                int result = pstDelete.executeUpdate();
+                if (result > 0) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "Grade deleted successfully!");
+                    alert.showAndWait();
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.WARNING, "No grade found with these details!");
+                    alert.showAndWait();
+                }
+
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        // Aranjare Grid
+        grid.add(lblDiscipline, 0, 0);
+        grid.add(cbDiscipline, 1, 0);
+        grid.add(lblStudent, 0, 1);
+        grid.add(cbStudent, 1, 1);
+        grid.add(lblGrade, 0, 2);
+        grid.add(cbGrade, 1, 2);
+        grid.add(btnDelete, 1, 3);
+
+        pane.getChildren().addAll(lblTitle, grid);
+        return pane;
+    }
+
+
+
+
+    private VBox UpdateGrade() {
+        VBox pane = new VBox(20);
+        pane.setPrefSize(700, 550);
+
+        pane.setPadding(new Insets(30));
+        pane.setStyle("""
+        -fx-background-color: white;
+        -fx-background-radius: 20;
+        -fx-border-color: #B0B0B0;
+        -fx-border-width: 1;
+        -fx-border-radius: 20;
+    """);
+        pane.setEffect(new DropShadow(8, Color.rgb(0,0,0,0.15)));
+
+        Label lblTitle = new Label("Update Grade");
+        lblTitle.setFont(Font.font("Roboto Mono", 28));
+        lblTitle.setStyle("-fx-text-fill: #272A31;");
+
+        GridPane grid = new GridPane();
+        grid.setHgap(20);
+        grid.setVgap(20);
+        grid.setPadding(new Insets(20));
+
+        // Discipline
+        Label lblDiscipline = new Label("Select Discipline:");
+        lblDiscipline.setFont(Font.font("Roboto Mono", 16));
+        ComboBox<String> cbDiscipline = new ComboBox<>();
+        cbDiscipline.setPrefWidth(250);
+        cbDiscipline.setPromptText("Choose discipline");
+
+        // Elevi
+        Label lblStudent = new Label("Select Student:");
+        lblStudent.setFont(Font.font("Roboto Mono", 16));
+        ComboBox<String> cbStudent = new ComboBox<>();
+        cbStudent.setPrefWidth(250);
+        cbStudent.setPromptText("Choose student");
+
+        // Nota veche
+        Label lblOldGrade = new Label("Select Old Grade:");
+        lblOldGrade.setFont(Font.font("Roboto Mono", 16));
+        ComboBox<Integer> cbOldGrade = new ComboBox<>();
+        cbOldGrade.setPrefWidth(150);
+
+        // Nota noua
+        Label lblNewGrade = new Label("Select New Grade:");
+        lblNewGrade.setFont(Font.font("Roboto Mono", 16));
+        ComboBox<Integer> cbNewGrade = new ComboBox<>();
+        cbNewGrade.setPrefWidth(150);
+        cbNewGrade.getItems().addAll(1,2,3,4,5,6,7,8,9,10);
+
+        // Populare discipline și elevi
+        try (Connection conn = ConnectionDB.getConnection()) {
+            ResultSet rsDisc = conn.createStatement().executeQuery("SELECT disciplina FROM Disciplini");
+            while (rsDisc.next()) {
+                cbDiscipline.getItems().add(rsDisc.getString("disciplina"));
+            }
+
+            ResultSet rsElevi = conn.createStatement().executeQuery(
+                    "SELECT prenumeElev, numeElev, patronimicElev FROM Elevi"
+            );
+            while (rsElevi.next()) {
+                String fullName = rsElevi.getString("prenumeElev") + " " +
+                        rsElevi.getString("numeElev") + " " +
+                        rsElevi.getString("patronimicElev");
+                cbStudent.getItems().add(fullName);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        // Populare cbOldGrade în funcție de discipline și elev
+        ChangeListener<Object> populateOldGrade = (obs, oldVal, newVal) -> {
+            cbOldGrade.getItems().clear();
+            String discipline = cbDiscipline.getValue();
+            String studentFullName = cbStudent.getValue();
+            if (discipline == null || studentFullName == null) return;
+
+            String[] names = studentFullName.split(" ");
+            try (Connection conn = ConnectionDB.getConnection()) {
+                // idElev
+                PreparedStatement pstElev = conn.prepareStatement(
+                        "SELECT idElev FROM Elevi WHERE prenumeElev=? AND numeElev=? AND patronimicElev=?"
+                );
+                pstElev.setString(1, names[0]);
+                pstElev.setString(2, names[1]);
+                pstElev.setString(3, names[2]);
+                ResultSet rsElev = pstElev.executeQuery();
+                if (!rsElev.next()) return;
+                int idElev = rsElev.getInt("idElev");
+
+                // idDisciplina
+                PreparedStatement pstDisc = conn.prepareStatement(
+                        "SELECT idDisciplina FROM Disciplini WHERE disciplina=?"
+                );
+                pstDisc.setString(1, discipline);
+                ResultSet rsDisc = pstDisc.executeQuery();
+                if (!rsDisc.next()) return;
+                int idDisciplina = rsDisc.getInt("idDisciplina");
+
+                // Note existente
+                PreparedStatement pstNote = conn.prepareStatement(
+                        "SELECT nota FROM Note WHERE idElev=? AND idDisciplina=?"
+                );
+                pstNote.setInt(1, idElev);
+                pstNote.setInt(2, idDisciplina);
+                ResultSet rsNote = pstNote.executeQuery();
+                while (rsNote.next()) {
+                    cbOldGrade.getItems().add(rsNote.getInt("nota"));
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        };
+
+        cbDiscipline.valueProperty().addListener(populateOldGrade);
+        cbStudent.valueProperty().addListener(populateOldGrade);
+
+        // Buton Update
+        Button btnUpdate = new Button("Update Grade");
+        btnUpdate.setFont(Font.font("Roboto Mono", 16));
+        btnUpdate.setStyle("-fx-background-color: #FFA500; -fx-text-fill: white; -fx-background-radius: 10;");
+        btnUpdate.setPrefWidth(200);
+
+        btnUpdate.setOnAction(e -> {
+            String discipline = cbDiscipline.getValue();
+            String studentFullName = cbStudent.getValue();
+            Integer oldGrade = cbOldGrade.getValue();
+            Integer newGrade = cbNewGrade.getValue();
+
+            if (discipline == null || studentFullName == null || oldGrade == null || newGrade == null) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Please select discipline, student, old grade and new grade.");
+                alert.showAndWait();
+                return;
+            }
+
+            String[] names = studentFullName.split(" ");
+
+            try (Connection conn = ConnectionDB.getConnection()) {
+                // idElev
+                PreparedStatement pstElev = conn.prepareStatement(
+                        "SELECT idElev FROM Elevi WHERE prenumeElev=? AND numeElev=? AND patronimicElev=?"
+                );
+                pstElev.setString(1, names[0]);
+                pstElev.setString(2, names[1]);
+                pstElev.setString(3, names[2]);
+                ResultSet rsElev = pstElev.executeQuery();
+                if (!rsElev.next()) return;
+                int idElev = rsElev.getInt("idElev");
+
+                // idDisciplina
+                PreparedStatement pstDisc = conn.prepareStatement(
+                        "SELECT idDisciplina FROM Disciplini WHERE disciplina=?"
+                );
+                pstDisc.setString(1, discipline);
+                ResultSet rsDisc = pstDisc.executeQuery();
+                if (!rsDisc.next()) return;
+                int idDisciplina = rsDisc.getInt("idDisciplina");
+
+                // Update nota
+                PreparedStatement pstUpdate = conn.prepareStatement(
+                        "UPDATE Note SET nota=? WHERE idElev=? AND idDisciplina=? AND nota=?"
+                );
+                pstUpdate.setInt(1, newGrade);
+                pstUpdate.setInt(2, idElev);
+                pstUpdate.setInt(3, idDisciplina);
+                pstUpdate.setInt(4, oldGrade);
+
+                int result = pstUpdate.executeUpdate();
+                if (result > 0) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "Grade updated successfully!");
+                    alert.showAndWait();
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.ERROR, "No matching grade found to update.");
+                    alert.showAndWait();
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        // Aranjare în Grid
+        grid.add(lblDiscipline, 0, 0);
+        grid.add(cbDiscipline, 1, 0);
+        grid.add(lblStudent, 0, 1);
+        grid.add(cbStudent, 1, 1);
+        grid.add(lblOldGrade, 0, 2);
+        grid.add(cbOldGrade, 1, 2);
+        grid.add(lblNewGrade, 0, 3);
+        grid.add(cbNewGrade, 1, 3);
+        grid.add(btnUpdate, 1, 4);
+
+        pane.getChildren().addAll(lblTitle, grid);
+        return pane;
+    }
+
+
 
 }
