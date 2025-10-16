@@ -17,12 +17,24 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
-
+import javafx.scene.control.cell.CheckBoxTableCell;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
+import javafx.scene.chart.PieChart;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import javafx.stage.FileChooser;
+import java.io.File;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+
 
 
 public class ManagementEducational extends BorderPane {
@@ -31,6 +43,8 @@ public class ManagementEducational extends BorderPane {
     int numarElevi = UserDAO.getElevCount();
     int numarDiscipline = UserDAO.getDisciplinaCount();
     int numarNote = UserDAO.getNoteCount();
+
+    private GridPane dashboardPane;
 
     private User currentUser;
 
@@ -80,9 +94,9 @@ public class ManagementEducational extends BorderPane {
         mainPanel.setStyle("-fx-background-color: rgba(242,242,242,1);");
         mainPanel.setPadding(new Insets(20, 20, 20, 20));
 
-        GridPane actionCards = new GridPane();
+        dashboardPane = new GridPane();
         AnchorPane container1 = new AnchorPane();
-        VBox container2 = new VBox(actionCards);
+        VBox container2 = new VBox(dashboardPane);
 
         container1.setMaxSize(700, 600);
         container1.setPrefSize(700, 600);
@@ -102,11 +116,11 @@ public class ManagementEducational extends BorderPane {
         statsBox.getChildren().addAll(cardStudents, cardEmployees, cardSubjects, cardHolidays);
 
 
-        actionCards.setHgap(10);
-        actionCards.setVgap(10);
-        actionCards.setAlignment(Pos.CENTER_RIGHT);
-        actionCards.setPadding(new Insets(0, 20, 0, 0));
-        actionCards.setStyle("-fx-background-color: transparent;");
+        dashboardPane.setHgap(10);
+        dashboardPane.setVgap(10);
+        dashboardPane.setAlignment(Pos.CENTER_RIGHT);
+        dashboardPane.setPadding(new Insets(0, 20, 0, 0));
+        dashboardPane.setStyle("-fx-background-color: transparent;");
 
         Node topStudentsCard = createActionCard("Top Students", "/images/addS.png");
         topStudentsCard.setOnMouseClicked(e -> {
@@ -115,7 +129,7 @@ public class ManagementEducational extends BorderPane {
             container1.getChildren().clear();
             container1.getChildren().setAll(topPane);
         });
-        actionCards.add(topStudentsCard, 0, 0);
+        dashboardPane.add(topStudentsCard, 0, 0);
 
         Node avgGradeCard = createActionCard("Average Grade", "/images/addE.png");
         avgGradeCard.setOnMouseClicked(e -> {
@@ -123,7 +137,7 @@ public class ManagementEducational extends BorderPane {
             container1.getChildren().clear();
             container1.getChildren().setAll(avgPane);
         });
-        actionCards.add(avgGradeCard, 1, 0);
+        dashboardPane.add(avgGradeCard, 1, 0);
 
 
 
@@ -133,7 +147,7 @@ public class ManagementEducational extends BorderPane {
             container1.getChildren().clear();
             container1.getChildren().setAll(RegPane);
         });
-        actionCards.add(RegisterCard, 0, 1);
+        dashboardPane.add(RegisterCard, 0, 1);
 
 
 
@@ -146,7 +160,7 @@ public class ManagementEducational extends BorderPane {
             container1.getChildren().clear();
             container1.getChildren().setAll(subjectsPane);
         });
-        actionCards.add(subjectsCard, 1, 1);
+        dashboardPane.add(subjectsCard, 1, 1);
 
 
 
@@ -232,7 +246,7 @@ public class ManagementEducational extends BorderPane {
 
 
 
-        RoundedButton btnEmployee = new RoundedButton("Register", "/images/admin.png");
+        RoundedButton btnEmployee = new RoundedButton("Register", "/images/registru.png");
 
         VBox gradeSubMenu = new VBox(10);
         gradeSubMenu.setPadding(new Insets(0, 0, 0, 20));
@@ -240,7 +254,7 @@ public class ManagementEducational extends BorderPane {
         gradeSubMenu.managedProperty().bind(gradeSubMenu.visibleProperty());
 
         RoundedButton btnAfisareGrade = new RoundedButton("Show", null);
-        btnAfisareGrade.setStyle("-fx-background-color: #4E5665; -fx-background-radius: 10;");
+        btnAfisareGrade.setStyle("-fx-background-color: #4E5665; -fx-background-radius: 15;");
         btnAfisareGrade.setOnAction(e -> {
 
             VBox RegPane = createRegistruPane();
@@ -249,7 +263,7 @@ public class ManagementEducational extends BorderPane {
         });
 
         RoundedButton btnAdaugareGrade = new RoundedButton("Add Grade", null);
-        btnAdaugareGrade.setStyle("-fx-background-color: #4E5665; -fx-background-radius: 10;");
+        btnAdaugareGrade.setStyle("-fx-background-color: #4E5665; -fx-background-radius: 15;");
         btnAdaugareGrade.setOnAction(e -> {
             VBox addGradePane = AddGrade();
             container1.getChildren().clear();
@@ -258,7 +272,7 @@ public class ManagementEducational extends BorderPane {
 
 // Buton Delete Grade
         RoundedButton btnStergereGrade = new RoundedButton("Delete Grade", null);
-        btnStergereGrade.setStyle("-fx-background-color: #4E5665; -fx-background-radius: 10;");
+        btnStergereGrade.setStyle("-fx-background-color: #4E5665; -fx-background-radius: 15;");
         btnStergereGrade.setOnAction(e -> {
             VBox deleteGradePane = createDeleteGradePane();
             container1.getChildren().clear();
@@ -267,7 +281,7 @@ public class ManagementEducational extends BorderPane {
 
 // Buton Modify Grade
         RoundedButton btnModificareGrade = new RoundedButton("Modify Grade", null);
-        btnModificareGrade.setStyle("-fx-background-color: #4E5665; -fx-background-radius: 10;");
+        btnModificareGrade.setStyle("-fx-background-color: #4E5665; -fx-background-radius: 15;");
         btnModificareGrade.setOnAction(e -> {
             VBox modifyGradePane = UpdateGrade();
             container1.getChildren().clear();
@@ -289,25 +303,154 @@ public class ManagementEducational extends BorderPane {
         });
 
 
+// ===================== Attendance Section =====================
+        RoundedButton btnAttendance = new RoundedButton("Attendance", "/images/Attendance.png");
+
+        VBox attendanceSubMenu = new VBox(10);
+        attendanceSubMenu.setPadding(new Insets(0, 0, 0, 20));
+        attendanceSubMenu.setVisible(false);
+        attendanceSubMenu.managedProperty().bind(attendanceSubMenu.visibleProperty());
+
+// --- Sub-buton 1: Daily Register ---
+        RoundedButton btnDailyRegister = new RoundedButton("Daily Register", null);
+        btnDailyRegister.setStyle("-fx-background-color: #4E5665; -fx-background-radius: 10;");
+        btnDailyRegister.setOnAction(e -> {
+            AnchorPane pane = createDailyAttendancePane();
+            container1.getChildren().clear();
+            container1.getChildren().add(pane);
+        });
+
+// --- Sub-buton 2: Attendance Report ---
+        RoundedButton btnAttendanceReport = new RoundedButton("View Report", null);
+        btnAttendanceReport.setStyle("-fx-background-color: #4E5665; -fx-background-radius: 10;");
+        btnAttendanceReport.setOnAction(e -> {
+            AnchorPane pane = createAttendanceReportPane();
+            container1.getChildren().clear();
+            container1.getChildren().add(pane);
+        });
+
+        attendanceSubMenu.getChildren().addAll(btnDailyRegister, btnAttendanceReport);
+
+// --- Toggle Submenu ---
+        btnAttendance.setOnAction(e -> {
+            boolean visible = attendanceSubMenu.isVisible();
+            attendanceSubMenu.setVisible(!visible);
+            if (!visible) {
+                btnAttendance.setStyle("-fx-background-color: #6C7A89; -fx-background-radius: 15;");
+            } else {
+                btnAttendance.setStyle("-fx-background-color: rgba(39,42,49,1); -fx-background-radius: 15;");
+            }
+        });
+
+// --- Hover Effects ---
+        addHoverEffect(btnAttendance, "rgba(39,42,49,1)", "#6C7A89");
+        addHoverEffect(btnDailyRegister, "#4E5665", "#6C7A89");
+        addHoverEffect(btnAttendanceReport, "#4E5665", "#6C7A89");
+
+
+
+        // ===================== Reports Section =====================
+        RoundedButton btnReports = new RoundedButton("Reports", "/images/report.png"); // poți schimba imaginea
+        VBox reportsSubMenu = new VBox(10);
+        reportsSubMenu.setPadding(new Insets(0, 0, 0, 20));
+        reportsSubMenu.setVisible(false);
+        reportsSubMenu.managedProperty().bind(reportsSubMenu.visibleProperty());
+
+// --- Sub-butoane ---
+        RoundedButton btnAveragePerSubject = new RoundedButton("Average per Subject", null);
+        btnAveragePerSubject.setOnAction(e -> {
+            hideDashboardButtons();
+            AnchorPane pane = createAveragePerSubjectPane();
+            Platform.runLater(() -> container1.getChildren().add(pane));
+        });
+
+        RoundedButton btnTopStudents = new RoundedButton("Top Students per Subject", null);
+        btnTopStudents.setOnAction(e -> {
+            hideDashboardButtons();
+            AnchorPane pane = createTopStudentsPane();
+            container1.getChildren().setAll(pane);
+        });
+
+        RoundedButton btnGradeDistribution = new RoundedButton("Grades Distribution Chart", null);
+        btnGradeDistribution.setOnAction(e -> {
+            hideDashboardButtons();
+            AnchorPane pane = createGradeDistributionPane();
+            container1.getChildren().setAll(pane);
+        });
+
+        RoundedButton btnExport = new RoundedButton("Export PDF / CSV", null);
+        btnExport.setOnAction(e -> {
+            hideDashboardButtons();
+            AnchorPane pane = createExportReportsPane();
+            container1.getChildren().setAll(pane);
+        });
+
+// Adăugare butoane în submeniu
+        reportsSubMenu.getChildren().addAll(btnAveragePerSubject, btnTopStudents, btnGradeDistribution, btnExport);
+
+// Toggle submenu
+        btnReports.setOnAction(e -> {
+            boolean visible = reportsSubMenu.isVisible();
+            reportsSubMenu.setVisible(!visible);
+            if (!visible)
+                btnReports.setStyle("-fx-background-color: #6C7A89; -fx-background-radius: 15;");
+            else
+                btnReports.setStyle("-fx-background-color: rgba(39,42,49,1); -fx-background-radius: 15;");
+        });
+
+// Hover effects
+        addHoverEffect(btnReports, "rgba(39,42,49,1)", "#6C7A89");
+        addHoverEffect(btnAveragePerSubject, "#4E5665", "#6C7A89");
+        addHoverEffect(btnTopStudents, "#4E5665", "#6C7A89");
+        addHoverEffect(btnGradeDistribution, "#4E5665", "#6C7A89");
+        addHoverEffect(btnExport, "#4E5665", "#6C7A89");
+
+
+
         addHoverEffect(btnStudent, "rgba(39,42,49,1)", "#6C7A89");
         addHoverEffect(btnEmployee, "rgba(39,42,49,1)", "#6C7A89");
         addHoverEffect(btnAfisare, "#4E5665", "#6C7A89");
         addHoverEffect(btnAdaugare, "#4E5665", "#6C7A89");
         addHoverEffect(btnStergere, "#4E5665", "#6C7A89");
         addHoverEffect(btnModificare, "#4E5665", "#6C7A89");
+        addHoverEffect(btnAfisareGrade, "#4E5665", "#6C7A89");
+        addHoverEffect(btnAdaugareGrade, "#4E5665", "#6C7A89");
+        addHoverEffect(btnStergereGrade, "#4E5665", "#6C7A89");
+        addHoverEffect(btnModificareGrade, "#4E5665", "#6C7A89");
 
 
         RoundedButton btnClose = new RoundedButton("Close Application", null);
         addHoverEffect(btnClose, "rgba(39,42,49,1)", "#6C7A89");
         btnClose.setOnAction(e -> Platform.exit());
+        Region spacer = new Region();
+        VBox.setVgrow(spacer, Priority.ALWAYS);
 
 
-        leftPanel.getChildren().addAll(btnStudent, studentSubMenu, btnEmployee, gradeSubMenu, btnClose);
+        leftPanel.getChildren().addAll(btnStudent, studentSubMenu, btnEmployee, gradeSubMenu, btnAttendance,
+                attendanceSubMenu,  btnReports, reportsSubMenu, spacer, btnClose);
+
+        leftPanel.setAlignment(Pos.TOP_CENTER);
+        VBox.setMargin(btnClose, new Insets(20, 0, 10, 0));
 
         setLeft(leftPanel);
         setTop(topContainer);
         setCenter(mainPanel);
     }
+
+    private void hideDashboardButtons() {
+        for (Node node : dashboardPane.getChildren()) {
+            node.setVisible(false);
+            node.setManaged(false);
+        }
+    }
+
+    private void showDashboardButtons() {
+        for (Node node : dashboardPane.getChildren()) {
+            node.setVisible(true);
+            node.setManaged(true);
+        }
+    }
+
 
     private void addHoverEffect(RoundedButton button, String normalColor, String hoverColor) {
         button.setStyle("-fx-background-color: " + normalColor + "; -fx-background-radius: 15; -fx-text-fill: white;");
@@ -570,6 +713,8 @@ public class ManagementEducational extends BorderPane {
 
         return pane;
     }
+
+
 
 
 
@@ -1892,6 +2037,586 @@ public class ManagementEducational extends BorderPane {
         pane.getChildren().addAll(lblTitle, grid);
         return pane;
     }
+
+
+    private AnchorPane createDailyAttendancePane() {
+        AnchorPane pane = new AnchorPane();
+        pane.setPrefSize(700, 600);
+        pane.setStyle("""
+        -fx-background-color: white;
+        -fx-background-radius: 20;
+        -fx-border-color: #B0B0B0;
+        -fx-border-width: 1;
+        -fx-border-radius: 20;
+    """);
+
+        Label lblTitle = new Label("Daily Attendance");
+        lblTitle.setFont(Fonts.RobotoMonoBold32);
+        lblTitle.setStyle("-fx-text-fill: #272A31;");
+        AnchorPane.setTopAnchor(lblTitle, 40.0);
+        AnchorPane.setLeftAnchor(lblTitle, 220.0);
+
+        // Select discipline
+        ComboBox<String> cbDiscipline = new ComboBox<>();
+        cbDiscipline.setPromptText("Select discipline");
+        cbDiscipline.setPrefWidth(300);
+        AnchorPane.setTopAnchor(cbDiscipline, 100.0);
+        AnchorPane.setLeftAnchor(cbDiscipline, 200.0);
+
+        try (Connection conn = ConnectionDB.getConnection();
+             ResultSet rs = conn.createStatement().executeQuery("SELECT disciplina FROM Disciplini")) {
+            while (rs.next()) cbDiscipline.getItems().add(rs.getString("disciplina"));
+        } catch (SQLException ex) { ex.printStackTrace(); }
+
+        TableView<Elev> table = new TableView<>();
+        table.setPrefWidth(600);
+        table.setPrefHeight(350);
+        AnchorPane.setTopAnchor(table, 160.0);
+        AnchorPane.setLeftAnchor(table, 50.0);
+
+        TableColumn<Elev, String> colNume = new TableColumn<>("Nume");
+        colNume.setCellValueFactory(new PropertyValueFactory<>("numeElev"));
+
+        TableColumn<Elev, String> colPrenume = new TableColumn<>("Prenume");
+        colPrenume.setCellValueFactory(new PropertyValueFactory<>("prenumeElev"));
+
+        TableColumn<Elev, Boolean> colPrezenta = new TableColumn<>("Present");
+        colPrezenta.setCellValueFactory(cellData -> cellData.getValue().presentProperty());
+        colPrezenta.setCellFactory(CheckBoxTableCell.forTableColumn(colPrezenta));
+        colPrezenta.setEditable(true);
+
+        table.setEditable(true);
+
+        // 🔹 Colorare dinamică a rândurilor în funcție de prezență
+        table.setRowFactory(tv -> new TableRow<>() {
+            @Override
+            protected void updateItem(Elev elev, boolean empty) {
+                super.updateItem(elev, empty);
+                if (elev == null || empty) {
+                    setStyle("");
+                } else if (elev.isPresent()) {
+                    setStyle("-fx-background-color: rgba(56,142,60,0.2);"); // verde deschis
+                } else {
+                    setStyle("-fx-background-color: rgba(211,47,47,0.15);"); // roșu deschis
+                }
+
+                // 🔹 Ascultă modificările de stare în timp real
+                if (elev != null) {
+                    elev.presentProperty().addListener((obs, oldVal, newVal) -> {
+                        if (newVal) {
+                            setStyle("-fx-background-color: rgba(56,142,60,0.2);");
+                        } else {
+                            setStyle("-fx-background-color: rgba(211,47,47,0.15);");
+                        }
+                    });
+                }
+            }
+        });
+
+
+
+        table.getColumns().addAll(colNume, colPrenume, colPrezenta);
+
+        cbDiscipline.setOnAction(e -> {
+            ObservableList<Elev> elevi = FXCollections.observableArrayList();
+            try (Connection conn = ConnectionDB.getConnection();
+                 PreparedStatement ps = conn.prepareStatement("SELECT * FROM Elevi");
+                 ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    elevi.add(new Elev(
+                            rs.getInt("idElev"),
+                            rs.getString("numeElev"),
+                            rs.getString("prenumeElev"),
+                            rs.getString("patronimicElev"),
+                            rs.getDate("DataNasterii"),
+                            rs.getString("IDNP"),
+                            rs.getString("email"),
+                            rs.getString("telefon")
+                    ));
+                }
+            } catch (SQLException ex) { ex.printStackTrace(); }
+            table.setItems(elevi);
+        });
+
+        Button btnSave = new Button("Save Attendance");
+        btnSave.setPrefSize(200, 40);
+        btnSave.setStyle("-fx-background-color: #398585; -fx-text-fill: white; -fx-background-radius: 10;");
+        AnchorPane.setBottomAnchor(btnSave, 40.0);
+        AnchorPane.setLeftAnchor(btnSave, 250.0);
+
+        btnSave.setOnAction(e -> {
+            String selectedDisc = cbDiscipline.getValue();
+            if (selectedDisc == null) return;
+            int idDisc = -1;
+            try (Connection conn = ConnectionDB.getConnection();
+                 PreparedStatement ps = conn.prepareStatement("SELECT idDisciplina FROM Disciplini WHERE disciplina=?")) {
+                ps.setString(1, selectedDisc);
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) idDisc = rs.getInt(1);
+            } catch (SQLException ex) { ex.printStackTrace(); }
+
+            LocalDate today = LocalDate.now();
+            for (Elev elev : table.getItems()) {
+                boolean prez = elev.isPresent(); // dacă ai Checkbox model, poți obține valoarea reală
+                try (Connection conn = ConnectionDB.getConnection();
+                     PreparedStatement ps = conn.prepareStatement(
+                             "INSERT INTO Prezente (idElev, idDisciplina, data, prezent) VALUES (?, ?, ?, ?)")) {
+                    ps.setInt(1, elev.getIdElev());
+                    ps.setInt(2, idDisc);
+                    ps.setDate(3, Date.valueOf(today));
+                    ps.setBoolean(4, prez);
+                    ps.executeUpdate();
+                } catch (SQLException ex) { ex.printStackTrace(); }
+            }
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Attendance saved successfully!");
+            alert.showAndWait();
+        });
+
+        pane.getChildren().addAll(lblTitle, cbDiscipline, table, btnSave);
+        return pane;
+    }
+
+    private AnchorPane createAttendanceReportPane() {
+        AnchorPane pane = new AnchorPane();
+        pane.setPrefSize(700, 600);
+        pane.setStyle("""
+        -fx-background-color: white;
+        -fx-background-radius: 20;
+        -fx-border-color: #B0B0B0;
+        -fx-border-width: 1;
+        -fx-border-radius: 20;
+    """);
+
+        Label lblTitle = new Label("Attendance Report");
+        lblTitle.setFont(Fonts.RobotoMonoBold32);
+        lblTitle.setStyle("-fx-text-fill: #272A31;");
+        AnchorPane.setTopAnchor(lblTitle, 40.0);
+        AnchorPane.setLeftAnchor(lblTitle, 220.0);
+
+        TableView<AttendanceReport> table = new TableView<>();
+        table.setPrefWidth(600);
+        table.setPrefHeight(400);
+        AnchorPane.setTopAnchor(table, 120.0);
+        AnchorPane.setLeftAnchor(table, 50.0);
+
+        TableColumn<AttendanceReport, String> colName = new TableColumn<>("Student");
+        colName.setCellValueFactory(new PropertyValueFactory<>("studentName"));
+
+        TableColumn<AttendanceReport, Long> colPresent = new TableColumn<>("Days Present");
+        colPresent.setCellValueFactory(new PropertyValueFactory<>("daysPresent"));
+
+        TableColumn<AttendanceReport, Long> colAbsent = new TableColumn<>("Days Absent");
+        colAbsent.setCellValueFactory(new PropertyValueFactory<>("daysAbsent"));
+
+        table.getColumns().addAll(colName, colPresent, colAbsent);
+
+        ObservableList<AttendanceReport> list = FXCollections.observableArrayList();
+
+        String sql = """
+        SELECT e.prenumeElev + ' ' + e.numeElev AS nume,
+               SUM(CASE WHEN p.prezent = 1 THEN 1 ELSE 0 END) AS prezente,
+               SUM(CASE WHEN p.prezent = 0 THEN 1 ELSE 0 END) AS absente
+        FROM Prezente p
+        JOIN Elevi e ON p.idElev = e.idElev
+        GROUP BY e.prenumeElev, e.numeElev
+    """;
+
+        try (Connection conn = ConnectionDB.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                list.add(new AttendanceReport(
+                        rs.getString("nume"),
+                        rs.getLong("prezente"),
+                        rs.getLong("absente")
+                ));
+            }
+        } catch (SQLException ex) { ex.printStackTrace(); }
+
+        table.setItems(list);
+        pane.getChildren().addAll(lblTitle, table);
+        return pane;
+    }
+
+
+    private AnchorPane createAveragePerSubjectPane() {
+        AnchorPane pane = new AnchorPane();
+        pane.setPrefSize(900, 600);
+        pane.setStyle("-fx-background-color: white; -fx-background-radius: 20;");
+
+        Label lblTitle = new Label("Average Grade per Subject");
+        lblTitle.setFont(Fonts.RobotoMonoBold32);
+        lblTitle.setStyle("-fx-text-fill: #272A31;");
+        AnchorPane.setTopAnchor(lblTitle, 30.0);
+        AnchorPane.setLeftAnchor(lblTitle, 200.0);
+
+        CategoryAxis xAxis = new CategoryAxis();
+        xAxis.setLabel("Subject");
+        xAxis.setTickLabelRotation(-25);
+
+        NumberAxis yAxis = new NumberAxis(0, 10, 1);
+        yAxis.setLabel("Average Grade");
+
+        BarChart<String, Number> chart = new BarChart<>(xAxis, yAxis);
+        chart.setLegendVisible(false);
+        chart.setAnimated(false);
+        chart.setCache(false);
+        chart.setStyle("-fx-background-color: transparent;");
+        chart.setCategoryGap(25);
+        chart.setBarGap(8);
+        chart.setPrefSize(800, 450);
+
+        AnchorPane.setTopAnchor(chart, 100.0);
+        AnchorPane.setLeftAnchor(chart, 50.0);
+        AnchorPane.setRightAnchor(chart, 50.0);
+        AnchorPane.setBottomAnchor(chart, 50.0);
+
+        pane.getChildren().addAll(lblTitle, chart);
+
+        // 🔹 SQL Query
+        String sql = """
+        SELECT 
+            d.disciplina AS Disciplina,
+            CAST(AVG(CAST(n.nota AS FLOAT)) AS DECIMAL(4,2)) AS Medie
+        FROM Note n
+        JOIN Disciplini d ON n.idDisciplina = d.idDisciplina
+        GROUP BY d.disciplina
+        ORDER BY Medie DESC
+        """;
+
+        List<XYChart.Data<String, Number>> dataList = new ArrayList<>();
+
+        try (Connection conn = ConnectionDB.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                String disciplina = rs.getString("Disciplina");
+                double medie = rs.getDouble("Medie");
+                dataList.add(new XYChart.Data<>(disciplina, medie));
+            }
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        // ✅ Fix final – Așteptăm până când panoul este adăugat în scenă
+        pane.sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (newScene != null) {
+                Platform.runLater(() -> {
+                    if (dataList.isEmpty()) {
+                        System.out.println("⚠️ No data found for AveragePerSubjectPane");
+                        return;
+                    }
+
+                    XYChart.Series<String, Number> series = new XYChart.Series<>();
+                    series.getData().addAll(dataList);
+                    chart.getData().add(series);
+
+                    // Adăugăm etichete + stil
+                    for (XYChart.Data<String, Number> data : series.getData()) {
+                        Node node = data.getNode();
+                        if (node == null) continue;
+
+                        // Culoare albastru mai închis spre deschis
+                        node.setStyle("-fx-background-color: linear-gradient(to top, #5494da, #86cefa);");
+
+                        // Eticheta numerică
+                        Label label = new Label(String.format("%.2f", data.getYValue().doubleValue()));
+                        label.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1B1F29;");
+                        label.setTranslateY(-20);
+
+                        if (node.getParent() instanceof StackPane parent && !parent.getChildren().contains(label)) {
+                            parent.getChildren().add(label);
+                            StackPane.setAlignment(label, Pos.TOP_CENTER);
+                        }
+                    }
+                });
+            }
+        });
+
+        return pane;
+    }
+
+
+    private AnchorPane createTopStudentsPane() {
+        AnchorPane pane = new AnchorPane();
+        pane.setPrefSize(800, 600);
+        pane.setStyle("-fx-background-color: white; -fx-background-radius: 20;");
+
+        Label lblTitle = new Label("Top Students per Subject");
+        lblTitle.setFont(Fonts.RobotoMonoBold32);
+        lblTitle.setStyle("-fx-text-fill: #272A31;");
+        AnchorPane.setTopAnchor(lblTitle, 30.0);
+        AnchorPane.setLeftAnchor(lblTitle, 200.0);
+
+        // 🔹 ComboBox pentru alegerea disciplinei
+        ComboBox<String> cbDiscipline = new ComboBox<>();
+        cbDiscipline.setPromptText("Select Subject");
+        cbDiscipline.setPrefWidth(250);
+        AnchorPane.setTopAnchor(cbDiscipline, 90.0);
+        AnchorPane.setLeftAnchor(cbDiscipline, 270.0);
+
+        // 🔹 Axele și graficul
+        CategoryAxis xAxis = new CategoryAxis();
+        xAxis.setLabel("Students");
+
+        NumberAxis yAxis = new NumberAxis();
+        yAxis.setLabel("Average Grade");
+
+        BarChart<String, Number> chart = new BarChart<>(xAxis, yAxis);
+        chart.setPrefSize(700, 400);
+        chart.setLegendVisible(false);
+        AnchorPane.setTopAnchor(chart, 150.0);
+        AnchorPane.setLeftAnchor(chart, 50.0);
+
+        // 🔹 Încarcă lista de discipline din baza de date
+        try (Connection conn = ConnectionDB.getConnection();
+             PreparedStatement ps = conn.prepareStatement("SELECT disciplina FROM Disciplini");
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                cbDiscipline.getItems().add(rs.getString("disciplina"));
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        // 🔹 Eveniment: schimbare disciplină => actualizează graficul
+        cbDiscipline.setOnAction(e -> {
+            String disciplinaSelectata = cbDiscipline.getValue();
+            if (disciplinaSelectata == null) return;
+
+            chart.getData().clear();
+
+            String sql = """
+            SELECT TOP 10
+                e.prenumeElev + ' ' + e.numeElev AS Nume,
+                AVG(CAST(n.nota AS FLOAT)) AS Medie
+            FROM Note n
+            JOIN Elevi e ON n.idElev = e.idElev
+            JOIN Disciplini d ON n.idDisciplina = d.idDisciplina
+            WHERE d.disciplina = ?
+            GROUP BY e.prenumeElev, e.numeElev
+            ORDER BY Medie DESC
+            """;
+
+            try (Connection conn = ConnectionDB.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, disciplinaSelectata);
+                ResultSet rs = ps.executeQuery();
+
+                XYChart.Series<String, Number> serie = new XYChart.Series<>();
+                serie.setName(disciplinaSelectata);
+
+                while (rs.next()) {
+                    serie.getData().add(new XYChart.Data<>(
+                            rs.getString("Nume"), rs.getDouble("Medie")));
+                }
+
+                chart.getData().add(serie);
+
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        pane.getChildren().addAll(lblTitle, cbDiscipline, chart);
+        ScrollPane scroll = new ScrollPane(pane);
+        scroll.setFitToWidth(true);
+        scroll.setFitToHeight(true);
+        scroll.setStyle("-fx-background-color: transparent;");
+        scroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+
+        AnchorPane root = new AnchorPane(scroll);
+        AnchorPane.setTopAnchor(scroll, 0.0);
+        AnchorPane.setLeftAnchor(scroll, 0.0);
+        AnchorPane.setRightAnchor(scroll, 0.0);
+        AnchorPane.setBottomAnchor(scroll, 0.0);
+
+        return root;
+
+    }
+
+
+
+    private AnchorPane createGradeDistributionPane() {
+        AnchorPane pane = new AnchorPane();
+        pane.setPrefSize(800, 600);
+        pane.setStyle("-fx-background-color: white; -fx-background-radius: 20;");
+
+        Label lblTitle = new Label("Grades Distribution");
+        lblTitle.setFont(Fonts.RobotoMonoBold32);
+        lblTitle.setStyle("-fx-text-fill: #272A31;");
+        AnchorPane.setTopAnchor(lblTitle, 30.0);
+        AnchorPane.setLeftAnchor(lblTitle, 250.0);
+
+        PieChart chart = new PieChart();
+        chart.setPrefSize(700, 400);
+        AnchorPane.setTopAnchor(chart, 100.0);
+        AnchorPane.setLeftAnchor(chart, 50.0);
+
+        String sql = "SELECT nota, COUNT(*) AS Count FROM Note GROUP BY nota";
+
+        try (Connection conn = ConnectionDB.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                chart.getData().add(new PieChart.Data(
+                        "Grade " + rs.getInt("nota"),
+                        rs.getInt("Count")
+                ));
+            }
+        } catch (SQLException ex) { ex.printStackTrace(); }
+
+        pane.getChildren().addAll(lblTitle, chart);
+        return pane;
+    }
+
+
+    private AnchorPane createExportReportsPane() {
+        AnchorPane pane = new AnchorPane();
+        pane.setPrefSize(900, 600);
+        pane.setStyle("-fx-background-color: white; -fx-background-radius: 20;");
+
+        // 🔹 Titlu
+        Label lblTitle = new Label("Export Reports");
+        lblTitle.setFont(Fonts.RobotoMonoBold32);
+        lblTitle.setStyle("-fx-text-fill: #1B1F29;");
+        AnchorPane.setTopAnchor(lblTitle, 40.0);
+        AnchorPane.setLeftAnchor(lblTitle, 310.0);
+
+        // 🔹 Subtitlu
+        Label lblDesc = new Label("Choose your preferred format to export student grades:");
+        lblDesc.setStyle("-fx-font-size: 15px; -fx-text-fill: #555;");
+        AnchorPane.setTopAnchor(lblDesc, 100.0);
+        AnchorPane.setLeftAnchor(lblDesc, 240.0);
+
+        // 🔹 Linie decorativă sub titlu
+        Line line = new Line(180, 80, 720, 80);
+        line.setStroke(Color.web("#2b6cb0"));
+        line.setStrokeWidth(2);
+
+        // 🔹 Secțiune progres vizual
+        ProgressBar progressBar = new ProgressBar(0);
+        progressBar.setPrefWidth(400);
+        progressBar.setStyle("-fx-accent: #77ccff;");
+        AnchorPane.setTopAnchor(progressBar, 350.0);
+        AnchorPane.setLeftAnchor(progressBar, 250.0);
+
+        Label lblProgress = new Label("Ready to export");
+        lblProgress.setStyle("-fx-font-size: 13px; -fx-text-fill: #666;");
+        AnchorPane.setTopAnchor(lblProgress, 380.0);
+        AnchorPane.setLeftAnchor(lblProgress, 410.0);
+
+        // 🔹 Container pentru butoane
+        HBox btnBox = new HBox(30);
+        btnBox.setAlignment(Pos.CENTER);
+        AnchorPane.setTopAnchor(btnBox, 200.0);
+        AnchorPane.setLeftAnchor(btnBox, 100.0);
+        AnchorPane.setRightAnchor(btnBox, 100.0);
+
+        // Stil de bază pentru butoane
+        String baseStyle = """
+    -fx-background-color: #2b6cb0;
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-padding: 12 30 12 30;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 6, 0, 0, 2);
+    """;
+
+        String hoverStyle = """
+    -fx-background-color: #1e4f82;
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-padding: 12 30 12 30;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 3);
+    """;
+
+        // 🔹 Buton CSV
+        Button btnCSV = new Button("Export Grades to CSV");
+        btnCSV.setStyle(baseStyle);
+        btnCSV.setOnMouseEntered(e -> btnCSV.setStyle(hoverStyle));
+        btnCSV.setOnMouseExited(e -> btnCSV.setStyle(baseStyle));
+        btnCSV.setOnAction(e -> {
+            progressBar.setProgress(0.3);
+            lblProgress.setText("Exporting data...");
+            exportToCSV();
+            progressBar.setProgress(1.0);
+            lblProgress.setText("Export complete!");
+        });
+
+        // 🔹 Buton PDF
+        Button btnPDF = new Button("Export Grades to PDF");
+        btnPDF.setStyle(baseStyle);
+        btnPDF.setOnMouseEntered(e -> btnPDF.setStyle(hoverStyle));
+        btnPDF.setOnMouseExited(e -> btnPDF.setStyle(baseStyle));
+        btnPDF.setOnAction(e -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "PDF export coming soon!");
+            alert.showAndWait();
+        });
+
+        // 🔹 Buton Excel
+        Button btnExcel = new Button("Export Grades to Excel");
+        btnExcel.setStyle(baseStyle);
+        btnExcel.setOnMouseEntered(e -> btnExcel.setStyle(hoverStyle));
+        btnExcel.setOnMouseExited(e -> btnExcel.setStyle(baseStyle));
+        btnExcel.setOnAction(e -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Excel export coming soon!");
+            alert.showAndWait();
+        });
+
+        btnBox.getChildren().addAll(btnCSV, btnPDF, btnExcel);
+
+        pane.getChildren().addAll(lblTitle, lblDesc, line, btnBox, progressBar, lblProgress);
+        return pane;
+    }
+
+
+    private void exportToCSV() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Grades Report");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
+        File file = fileChooser.showSaveDialog(null);
+
+        if (file != null) {
+            try (PrintWriter pw = new PrintWriter(file)) {
+                pw.println("Student, Subject, Grade");
+
+                try (Connection conn = ConnectionDB.getConnection();
+                     PreparedStatement ps = conn.prepareStatement(
+                             "SELECT e.numeElev, d.disciplina, n.nota " +
+                                     "FROM Note n " +
+                                     "JOIN Elevi e ON n.idElev = e.idElev " +
+                                     "JOIN Disciplini d ON n.idDisciplina = d.idDisciplina")) {
+                    ResultSet rs = ps.executeQuery();
+                    while (rs.next()) {
+                        pw.printf("%s,%s,%d%n",
+                                rs.getString("numeElev"),
+                                rs.getString("disciplina"),
+                                rs.getInt("nota"));
+                    }
+                }
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "✅ Report exported successfully!");
+                alert.showAndWait();
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                Alert alert = new Alert(Alert.AlertType.ERROR, "❌ Failed to export CSV file!");
+                alert.showAndWait();
+            }
+        }
+    }
+
+
 
 
 
